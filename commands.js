@@ -1,4 +1,4 @@
-/**
+﻿/**
  * This is the file where the bot commands are located
  *
  * @license MIT license
@@ -7,48 +7,71 @@
 var http = require('http');
 var sys = require('sys');
 
-if (config.serverid === 'showdown') {
-	var https = require('https');
-	var csv = require('csv-parse');
-}
-
 exports.commands = {
 	/**
 	 * Help commands
 	 *
 	 * These commands are here to provide information about the bot.
 	 */
-
-	credits: 'about',
-	about: function(arg, by, room, con) {
+	
+	/*about: function(arg, by, room, con) {
 		if (this.hasRank(by, '#~') || room.charAt(0) === ',') {
 			var text = '';
 		} else {
 			var text = '/pm ' + by + ', ';
 		}
-		text += '**Pokémon Showdown Bot** by: Quinella, TalkTakesTime, and Morfent';
+		text += '**Pokémon Showdown Bot** by: Quinella and TalkTakesTime';
 		this.say(con, room, text);
 	},
-	git: function(arg, by, room, con) {
-		var text = config.excepts.indexOf(toId(by)) < 0 ? '/pm ' + by + ', ' : '';
-		text += '**Pokemon Showdown Bot** source code: ' + config.fork;
-		this.say(con, room, text);
-	},
-	help: 'guide',
-	guide: function(arg, by, room, con) {
-		if (this.hasRank(by, '#~') || room.charAt(0) === ',') {
+  	seen: function(arg, by, room, con) {
+  		var text = (room.charAt(0) === ',' ? '' : '/pm ' + by + ', ');
+  		if (toId(arg) === toId(by)) {
+  			text += 'Have you looked in the mirror lately?';
+  		} else if (toId(arg) === toId(config.nick)) {
+  			text += 'You might be either blind or illiterate. Might want to get that checked out.';
+  		} else if (!this.chatData[toId(arg)] || !this.chatData[toId(arg)].lastSeen) {
+  			text += 'The user ' + arg.trim() + ' has never been seen.';
+  		} else {
+  			text += arg.trim() + ' was last seen ' + this.getTimeAgo(this.chatData[toId(arg)].seenAt) + ' ago, ' + this.chatData[toId(arg)].lastSeen;
+  		}
+  		this.say(con, room, text);
+  	},
+	helix: function(arg, by, room, con) {
+		if (this.hasRank(by, '+%@#~') || room.charAt(0) === ',') {
 			var text = '';
 		} else {
 			var text = '/pm ' + by + ', ';
 		}
-		if (config.botguide) {
-			text += 'A guide on how to use this bot can be found here: ' + config.botguide;
-		} else {
-			text += 'There is no guide for this bot. PM the owner with any questions.';
-		}
-		this.say(con, room, text);
-	},
+		
+		var rand = Math.floor(20 * Math.random()) + 1;
+		var results = '';
 
+		switch (rand) {
+ 			case 1: results = "Signs point to yes."; break;
+			case 2: results = "Yes."; break;
+			case 3: results = "Reply hazy, try again."; break;
+			case 4: results = "Without a doubt."; break;
+			case 5: results = "My sources say no."; break;
+			case 6: results = "As I see it, yes."; break;
+			case 7: results = "You may rely on it."; break;
+			case 8: results = "Concentrate and ask again."; break;
+			case 9: results = "Outlook not so good."; break;
+			case 10: results = "It is decidedly so."; break;
+			case 11: results = "Better not tell you now."; break;
+			case 12: results = "Very doubtful."; break;
+			case 13: results = "Yes - definitely."; break;
+			case 14: results = "It is certain."; break;
+			case 15: results = "Cannot predict now."; break;
+			case 16: results = "Most likely."; break;
+			case 17: results = "Ask again later."; break;
+			case 18: results = "My reply is no."; break;
+			case 19: results = "Outlook good."; break;
+			case 20: results = "Don't count on it."; break;
+		}
+		text += ''+results+'';
+		this.say(con, room, text);
+	},*/
+	
 	/**
 	 * Dev commands
 	 *
@@ -56,19 +79,78 @@ exports.commands = {
 	 * to perform arbitrary actions that can't be done through any other commands
 	 * or to help with upkeep of the bot.
 	 */
-
+	
 	reload: function(arg, by, room, con) {
-		if (!this.hasRank(by, '#~')) return false;
+		if (config.excepts.indexOf(toId(by)) === -1 || room.charAt(0) !== ',') return false;
 		try {
 			this.uncacheTree('./commands.js');
 			Commands = require('./commands.js').commands;
-			this.say(con, room, 'Commands reloaded.');
+			this.say(con, room, 'Comandi ricaricati.');
 		} catch (e) {
-			error('failed to reload: ' + sys.inspect(e));
+			error('Errore nel ricaricare i comandi: ' + sys.inspect(e));
 		}
+		return
+	},
+	reloaddata: function(arg, by, room, con) {
+		if (config.excepts.indexOf(toId(by)) === -1 || room.charAt(0) !== ',') return false;
+		this.say(con, room, 'Reloading data files...');
+		var https = require('https');
+		var datenow = Date.now();
+		var formats = fs.createWriteStream("formats.js");
+		https.get("https://raw.githubusercontent.com/Zarel/Pokemon-Showdown/master/config/formats.js?" + datenow, function(res) {
+			res.pipe(formats);
+		});
+		var formatsdata = fs.createWriteStream("formats-data.js");
+		https.get("https://raw.githubusercontent.com/Zarel/Pokemon-Showdown/master/data/formats-data.js?" + datenow, function(res) {
+			res.pipe(formatsdata);
+		});
+		var pokedex = fs.createWriteStream("pokedex.js");
+		https.get("https://raw.githubusercontent.com/Zarel/Pokemon-Showdown/master/data/pokedex.js?" + datenow, function(res) {
+			res.pipe(pokedex);
+		});
+		var moves = fs.createWriteStream("moves.js");
+		https.get("https://raw.githubusercontent.com/Zarel/Pokemon-Showdown/master/data/moves.js?" + datenow, function(res) {
+			res.pipe(moves);
+		});
+		var abilities = fs.createWriteStream("abilities.js");
+		https.get("https://raw.githubusercontent.com/Zarel/Pokemon-Showdown/master/data/abilities.js?" + datenow, function(res) {
+			res.pipe(abilities);
+		});
+		var items = fs.createWriteStream("items.js");
+		https.get("https://raw.githubusercontent.com/Zarel/Pokemon-Showdown/master/data/items.js?" + datenow, function(res) {
+			res.pipe(items);
+		});
+		var learnsets = fs.createWriteStream("learnsets-g6.js");
+		https.get("https://raw.githubusercontent.com/Zarel/Pokemon-Showdown/master/data/learnsets-g6.js?" + datenow, function(res) {
+			res.pipe(learnsets);
+		});
+		var aliases = fs.createWriteStream("aliases.js");
+		https.get("https://raw.githubusercontent.com/Zarel/Pokemon-Showdown/master/data/aliases.js?" + datenow, function(res) {
+			res.pipe(aliases);
+		});
+		return this.say(con, room, 'Data files reloaded');
+	},
+	uptime: function(arg, by, room, con) {
+		if (config.excepts.indexOf(toId(by)) === -1 || room.charAt(0) !== ',') return false;
+		
+		var uptime = Math.floor((Date.now() - update) / 1000);
+		var uptimeDays = Math.floor(uptime / (24 * 60 * 60));
+		uptime -= uptimeDays * (24 * 60 * 60);
+		var uptimeHours = Math.floor(uptime / (60 * 60));
+		uptime -= uptimeHours * (60 * 60);
+		var uptimeMinutes = Math.floor(uptime / 60);
+		var uptimeSeconds = uptime - uptimeMinutes * 60;
+		
+		var uptimeText = "Uptime: ";
+		if (uptimeDays > 0) uptimeText += uptimeDays + " " + (uptimeDays === 1 ? "day" : "days") + ", ";
+		if (uptimeDays > 0 || uptimeHours > 0) uptimeText += uptimeHours + " " + (uptimeHours === 1 ? "hour" : "hours") + ", ";
+		if (uptimeDays > 0 || uptimeHours > 0 || uptimeMinutes > 0) uptimeText += uptimeMinutes + " " + (uptimeMinutes === 1 ? "minute" : "minutes") + ", ";
+		uptimeText += uptimeSeconds + " " + (uptimeSeconds === 1 ? "second" : "seconds");
+		
+		return this.say(con, room, uptimeText);
 	},
 	custom: function(arg, by, room, con) {
-		if (!this.hasRank(by, '~')) return false;
+		if (config.excepts.indexOf(toId(by)) === -1) return false;
 		// Custom commands can be executed in an arbitrary room using the syntax
 		// ".custom [room] command", e.g., to do !data pikachu in the room lobby,
 		// the command would be ".custom [lobby] !data pikachu". However, using
@@ -80,78 +162,61 @@ exports.commands = {
 		}
 		this.say(con, tarRoom || room, arg);
 	},
-	js: function(arg, by, room, con) {
-		if (config.excepts.indexOf(toId(by)) === -1) return false;
-		try {
-			var result = eval(arg.trim());
-			this.say(con, room, JSON.stringify(result));
-		} catch (e) {
-			this.say(con, room, e.name + ": " + e.message);
-		}
-	},
-
+	/*js: function(arg, by, room, con) {
+ 		if (config.excepts.indexOf(toId(by)) === -1) return false;
+ 		try {
+ 			var result = eval(arg.trim());
+ 			this.say(con, room, JSON.stringify(result));
+ 		} catch (e) {
+ 			this.say(con, room, e.name + ": " + e.message);
+ 		}
+ 	},
+	*/
+	
 	/**
 	 * Room Owner commands
-	 *
+  	 *
 	 * These commands allow room owners to personalise settings for moderation and command use.
-	 */
+  	 */
+	
+	canuse: function(arg, by, room, con) {
+		if (!this.hasRank(by, '#~') || room.charAt(0) === ',') return false;
 
-	settings: 'set',
-	set: function(arg, by, room, con) {
-		if (!this.hasRank(by, '%@&#~') || room.charAt(0) === ',') return false;
+		if (Date.now() - lastBroadcast < 2 * 1000) return this.say(con, room, "/pm " + by + ", Per evitare di essere mutata da boTTT ho annullato questo comando, riprova fra 2 secondi");
 
 		var settable = {
-			say: 1,
-			joke: 1,
-			choose: 1,
-			usagestats: 1,
-			buzz: 1,
-			'8ball': 1,
-			survivor: 1,
-			games: 1,
-			wifi: 1,
-			monotype: 1,
-			autoban: 1,
-			happy: 1,
-			guia: 1,
-			studio: 1,
-			'switch': 1,
-			banword: 1
+			broadcast: 1
 		};
 		var modOpts = {
 			flooding: 1,
 			caps: 1,
 			stretching: 1,
-			bannedwords: 1
+			bannedwords: 1,
+			snen: 1
 		};
-
 		var opts = arg.split(',');
 		var cmd = toId(opts[0]);
 		if (cmd === 'mod' || cmd === 'm' || cmd === 'modding') {
-			if (!opts[1] || !toId(opts[1]) || !(toId(opts[1]) in modOpts)) return this.say(con, room, 'Incorrect command: correct syntax is ' + config.commandcharacter + 'set mod, [' +
+			if (!opts[1] || !toId(opts[1]) || !(toId(opts[1]) in modOpts)) return this.say(con, room, 'Incorrect command: correct syntax is .set mod, [' +
 				Object.keys(modOpts).join('/') + '](, [on/off])');
 
 			if (!this.settings['modding']) this.settings['modding'] = {};
 			if (!this.settings['modding'][room]) this.settings['modding'][room] = {};
 			if (opts[2] && toId(opts[2])) {
 				if (!this.hasRank(by, '#~')) return false;
-				if (!(toId(opts[2]) in {on: 1, off: 1}))  return this.say(con, room, 'Incorrect command: correct syntax is ' + config.commandcharacter + 'set mod, [' +
+				if (!(toId(opts[2]) in {on: 1, off: 1}))  return this.say(con, room, 'Incorrect command: correct syntax is .set mod, [' +
 					Object.keys(modOpts).join('/') + '](, [on/off])');
-				if (toId(opts[2]) === 'off') {
-					this.settings['modding'][room][toId(opts[1])] = 0;
-				} else {
-					delete this.settings['modding'][room][toId(opts[1])];
-				}
+				this.settings['modding'][room][toId(opts[1])] = (toId(opts[2]) === 'on' ? true : false);
 				this.writeSettings();
 				this.say(con, room, 'Moderation for ' + toId(opts[1]) + ' in this room is now ' + toId(opts[2]).toUpperCase() + '.');
 				return;
 			} else {
 				this.say(con, room, 'Moderation for ' + toId(opts[1]) + ' in this room is currently ' +
-					(this.settings['modding'][room][toId(opts[1])] === 0 ? 'OFF' : 'ON') + '.');
+					(this.settings['modding'][room][toId(opts[1])] === false ? 'OFF' : 'ON') + '.');
 				return;
 			}
 		} else {
-			if (!Commands[cmd]) return this.say(con, room, config.commandcharacter + '' + opts[0] + ' is not a valid command.');
+			if (!Commands[cmd]) return this.say(con, room, '.' + opts[0] + ' is not a valid command.');
 			var failsafe = 0;
 			while (!(cmd in settable)) {
 				if (typeof Commands[cmd] === 'string') {
@@ -160,7 +225,7 @@ exports.commands = {
 					if (cmd in settable) {
 						break;
 					} else {
-						this.say(con, room, 'The settings for ' + config.commandcharacter + '' + opts[0] + ' cannot be changed.');
+						this.say(con, room, 'The settings for .' + opts[0] + ' cannot be changed.');
 						return;
 					}
 				} else {
@@ -169,10 +234,11 @@ exports.commands = {
 				}
 				failsafe++;
 				if (failsafe > 5) {
-					this.say(con, room, 'The command "' + config.commandcharacter + '' + opts[0] + '" could not be found.');
+					this.say(con, room, 'The command ".' + opts[0] + '" could not be found.');
 					return;
 				}
 			}
+		
 
 			var settingsLevels = {
 				off: false,
@@ -189,13 +255,13 @@ exports.commands = {
 			if (!opts[1] || !opts[1].trim()) {
 				var msg = '';
 				if (!this.settings[cmd] || (!this.settings[cmd][room] && this.settings[cmd][room] !== false)) {
-					msg = '.' + cmd + ' is available for users of rank ' + ((cmd === 'autoban' || cmd === 'banword') ? '#' : config.defaultrank) + ' and above.';
+					msg = '.' + cmd + ' is available for users of rank ' + config.defaultrank + ' and above.';
 				} else if (this.settings[cmd][room] in settingsLevels) {
 					msg = '.' + cmd + ' is available for users of rank ' + this.settings[cmd][room] + ' and above.';
 				} else if (this.settings[cmd][room] === true) {
 					msg = '.' + cmd + ' is available for all users in this room.';
 				} else if (this.settings[cmd][room] === false) {
-					msg = '' + config.commandcharacter+''+ cmd + ' is not available for use in this room.';
+					msg = '.' + cmd + ' is not available for use in this room.';
 				}
 				this.say(con, room, msg);
 				return;
@@ -206,222 +272,89 @@ exports.commands = {
 				if (!this.settings[cmd]) this.settings[cmd] = {};
 				this.settings[cmd][room] = settingsLevels[newRank];
 				this.writeSettings();
-				this.say(con, room, 'The command ' + config.commandcharacter + '' + cmd + ' is now ' +
+				this.say(con, room, 'The command .' + cmd + ' is now ' +
 					(settingsLevels[newRank] === newRank ? ' available for users of rank ' + newRank + ' and above.' :
 					(this.settings[cmd][room] ? 'available for all users in this room.' : 'unavailable for use in this room.')))
-			}
-		}
+ 			}
+ 		}
+ 	},
+	/*autoban: 'blacklist',
+	ban: 'blacklist',
+	ab: 'blacklist',
+	blacklist: function(arg, by, room, con) {
+		if (!this.canUse('blacklist', room, user) || room.charAt(0) === ',') return false;
+
+		var e = '';
+		arg = toId(arg);
+		if (arg.length > 18) e ='Invalid username: names must be less than 19 characters long.';
+		if (!e && !this.hasRank(this.ranks[toId(room)] + config.nick, '@&#~')) e = config.nick + ' requires rank of @ or higher to (un)blacklist.';
+		if (!e) e = this.blacklistUser(arg, room);
+		if (!e) this.say(con, room, '/roomban ' + arg + ', Blacklisted user');
+		this.say(con, room, (e ? e : 'User "' + arg + '" added to blacklist successfully.'));
 	},
-	blacklist: 'autoban',
-	ban: 'autoban',
-	ab: 'autoban',
-	autoban: function(arg, by, room, con) {
-		if (!this.canUse('autoban', room, by) || room.charAt(0) === ',') return false;
-		if (!this.hasRank(this.ranks[room] || ' ', '@&#~')) return this.say(con, room, config.nick + ' requires rank of @ or higher to (un)blacklist.');
+	unautoban: 'unblacklist',
+	unban: 'unblacklist',
+	unab: 'unblacklist',
+	unblacklist: function(arg, by, room, con) {
+		if (!this.canUse('blacklist', room, user) || room.charAt(0) === ',') return false;
 
-		arg = arg.split(',');
-		var added = [];
-		var illegalNick = [];
-		var alreadyAdded = [];
-		if (!arg.length || (arg.length === 1 && !arg[0].trim().length)) return this.say(con, room, 'You must specify at least one user to blacklist.');
-		for (var i = 0; i < arg.length; i++) {
-			var tarUser = toId(arg[i]);
-			if (tarUser.length < 1 || tarUser.length > 18) {
-				illegalNick.push(tarUser);
-				continue;
-			}
-			if (!this.blacklistUser(tarUser, room)) {
-				alreadyAdded.push(tarUser);
-				continue;
-			}
-			this.say(con, room, '/roomban ' + tarUser + ', Blacklisted user');
-			this.say(con,room, '/modnote ' + tarUser + ' was added to the blacklist by ' + by + '.');
-			added.push(tarUser);
-		}
-
-		var text = '';
-		if (added.length) {
-			text += 'User(s) "' + added.join('", "') + '" added to blacklist successfully. ';
-			this.writeSettings();
-		}
-		if (alreadyAdded.length) text += 'User(s) "' + alreadyAdded.join('", "') + '" already present in blacklist. ';
-		if (illegalNick.length) text += 'All ' + (text.length ? 'other ' : '') + 'users had illegal nicks and were not blacklisted.';
-		this.say(con, room, text);
-	},
-	unblacklist: 'unautoban',
-	unban: 'unautoban',
-	unab: 'unautoban',
-	unautoban: function(arg, by, room, con) {
-		if (!this.canUse('autoban', room, by) || room.charAt(0) === ',') return false;
-		if (!this.hasRank(this.ranks[room] || ' ', '@&#~')) return this.say(con, room, config.nick + ' requires rank of @ or higher to (un)blacklist.');
-
-		arg = arg.split(',');
-		var removed = [];
-		var notRemoved = [];
-		if (!arg.length || (arg.length === 1 && !arg[0].trim().length)) return this.say(con, room, 'You must specify at least one user to unblacklist.');
-		for (var i = 0; i < arg.length; i++) {
-			var tarUser = toId(arg[i]);
-			if (tarUser.length < 1 || tarUser.length > 18) {
-				notRemoved.push(tarUser);
-				continue;
-			}
-			if (!this.unblacklistUser(tarUser, room)) {
-				notRemoved.push(tarUser);
-				continue;
-			}
-			this.say(con, room, '/roomunban ' + tarUser);
-			removed.push(tarUser);
-		}
-
-		var text = '';
-		if (removed.length) {
-			text += 'User(s) "' + removed.join('", "') + '" removed from blacklist successfully. ';
-			this.writeSettings();
-		}
-		if (notRemoved.length) text += (text.length ? 'No other ' : 'No ') + 'specified users were present in the blacklist.';
-		this.say(con, room, text);
-	},
-	rab: 'regexautoban',
-	regexautoban: function(arg, by, room, con) {
-		if (config.regexautobanwhitelist.indexOf(toId(by)) < 0 || !this.canUse('autoban', room, by) || room.charAt(0) === ',') return false;
-		if (!this.hasRank(this.ranks[room] || ' ', '@&#~')) return this.say(con, room, config.nick + ' requires rank of @ or higher to (un)blacklist.');
-		if (!arg) return this.say(con, room, 'You must specify a regular expression to (un)blacklist.');
-
-		try {
-			new RegExp(arg, 'i');
-		} catch (e) {
-			return this.say(con, room, e.message);
-		}
-
-		arg = '/' + arg + '/i';
-		if (!this.blacklistUser(arg, room)) return this.say(con, room, '/' + arg + ' is already present in the blacklist.');
-
-		this.writeSettings();
-		this.say(con, room, '/' + arg + ' was added to the blacklist successfully.');
-	},
-	unrab: 'unregexautoban',
-	unregexautoban: function(arg, by, room, con) {
-		if (config.regexautobanwhitelist.indexOf(toId(by)) < 0 || !this.canUse('autoban', room, by) || room.charAt(0) === ',') return false;
-		if (!this.hasRank(this.ranks[room] || ' ', '@&#~')) return this.say(con, room, config.nick + ' requires rank of @ or higher to (un)blacklist.');
-		if (!arg) return this.say(con, room, 'You must specify a regular expression to (un)blacklist.');
-
-		arg = '/' + arg + '/i';
-		if (!this.unblacklistUser(arg, room)) return this.say(con, room,'/' + arg + ' is not present in the blacklist.');
-
-		this.writeSettings();
-		this.say(con, room, '/' + arg + ' was removed from the blacklist successfully.');
+		var e = '';
+		arg = toId(arg);
+		if (arg.length > 18) e ='Invalid username: names must be less than 19 characters long';
+		if (!e && !this.hasRank(this.ranks[toId(room)] + config.nick, '@&#~')) e = config.nick + ' requires rank of @ or higher to (un)blacklist.';
+		if (!e) e = this.unblacklistUser(arg, room);
+		if (!e) this.say(con, room, '/roomunban ' + arg);
+		this.say(con, room, (e ? e : 'User "' + arg + '" removed from blacklist successfully.'));
 	},
 	viewbans: 'viewblacklist',
 	vab: 'viewblacklist',
 	viewautobans: 'viewblacklist',
 	viewblacklist: function(arg, by, room, con) {
-		if (!this.canUse('autoban', room, by) || room.charAt(0) === ',') return false;
+		if (!this.canUse('blacklist', room, user) || room.charAt(0) === ',') return false;
 
 		var text = '';
 		if (!this.settings.blacklist || !this.settings.blacklist[room]) {
 			text = 'No users are blacklisted in this room.';
 		} else {
-			if (arg.length) {
-				var nick = toId(arg);
-				if (nick.length < 1 || nick.length > 18) {
-					text = 'Invalid nickname: "' + nick + '".';
-				} else {
-					text = 'User "' + nick + '" is currently ' + (nick in this.settings.blacklist[room] ? '' : 'not ') + 'blacklisted in ' + room + '.';
-				}
-			} else {
-				var nickList = Object.keys(this.settings.blacklist[room]);
-				if (!nickList.length) return this.say(con, room, '/pm ' + by + ', No users are blacklisted in this room.');
-				this.uploadToHastebin('The following users are banned in ' + room + ':\n\n' + nickList.join('\n'), function (link) {
-					this.say(con, room, "/pm " + by + ", Blacklist for room " + room + ": " + link);
-				}.bind(this));
-				return;
-			}
+			var nickList = Object.keys(this.settings.blacklist[room]);
+			text = 'The following users are blacklisted: ' + nickList.join(', ');
+			if (text.length > 300) text = 'Too many users to list.';
+			if (!nickList.length) text = 'No users are blacklisted in this room.';
 		}
 		this.say(con, room, '/pm ' + by + ', ' + text);
 	},
-	banphrase: 'banword',
 	banword: function(arg, by, room, con) {
-		if (!this.canUse('banword', room, by)) return false;
-		if (!this.settings.bannedphrases) this.settings.bannedphrases = {};
-		arg = arg.trim().toLowerCase();
-		if (!arg) return false;
-		var tarRoom = room;
+		if (!this.hasRank(by, '~')) return false;
 
-		if (room.charAt(0) === ',') {
-			if (!this.hasRank(by, '~')) return false;
-			tarRoom = 'global';
-		}
-
-		if (!this.settings.bannedphrases[tarRoom]) this.settings.bannedphrases[tarRoom] = {};
-		if (arg in this.settings.bannedphrases[tarRoom]) return this.say(con, room, "Phrase \"" + arg + "\" is already banned.");
-		this.settings.bannedphrases[tarRoom][arg] = 1;
+		if (!this.settings['bannedwords']) this.settings['bannedwords'] = {};
+		this.settings['bannedwords'][arg.trim().toLowerCase()] = 1;
 		this.writeSettings();
-		this.say(con, room, "Phrase \"" + arg + "\" is now banned.");
+		this.say(con, room, 'Word "' + arg.trim().toLowerCase() + '" banned.');
 	},
-	unbanphrase: 'unbanword',
 	unbanword: function(arg, by, room, con) {
-		if (!this.canUse('banword', room, by)) return false;
-		arg = arg.trim().toLowerCase();
-		if (!arg) return false;
-		var tarRoom = room;
+		if (!this.hasRank(by, '~')) return false;
 
-		if (room.charAt(0) === ',') {
-			if (!this.hasRank(by, '~')) return false;
-			tarRoom = 'global';
-		}
-
-		if (!this.settings.bannedphrases || !this.settings.bannedphrases[tarRoom] || !(arg in this.settings.bannedphrases[tarRoom])) 
-			return this.say(con, room, "Phrase \"" + arg + "\" is not currently banned.");
-		delete this.settings.bannedphrases[tarRoom][arg];
-		if (!Object.size(this.settings.bannedphrases[tarRoom])) delete this.settings.bannedphrases[tarRoom];
-		if (!Object.size(this.settings.bannedphrases)) delete this.settings.bannedphrases;
+		if (!this.settings['bannedwords']) this.settings['bannedwords'] = {};
+		delete this.settings['bannedwords'][arg.trim().toLowerCase()];
 		this.writeSettings();
-		this.say(con, room, "Phrase \"" + arg + "\" is no longer banned.");
-	},
-	viewbannedphrases: 'viewbannedwords',
-	vbw: 'viewbannedwords',
-	viewbannedwords: function(arg, by, room, con) {
-		if (!this.canUse('banword', room, by)) return false;
-		arg = arg.trim().toLowerCase();
-		var tarRoom = room;
+		this.say(con, room, 'Word "' + arg.trim().toLowerCase() + '" unbanned.');
+	},*/
 
-		if (room.charAt(0) === ',') {
-			if (!this.hasRank(by, '~')) return false;
-			tarRoom = 'global';
-		}
-
-		var text = "";
-		if (!this.settings.bannedphrases || !this.settings.bannedphrases[tarRoom]) {
-			text = "No phrases are banned in this room.";
-		} else {
-			if (arg.length) {
-				text = "The phrase \"" + arg + "\" is currently " + (arg in this.settings.bannedphrases[tarRoom] ? "" : "not ") + "banned " +
-					(room.charAt(0) === ',' ? "globally" : "in " + room) + ".";
-			} else {
-				var banList = Object.keys(this.settings.bannedphrases[tarRoom]);
-				if (!banList.length) return this.say(con, room, "No phrases are banned in this room.");
-				this.uploadToHastebin("The following phrases are banned " + (room.charAt(0) === ',' ? "globally" : "in " + room) + ":\n\n" + banList.join('\n'), function (link) {
-					this.say(con, room, (room.charAt(0) === ',' ? "" : "/pm " + by + ", ") + "Banned Phrases " + (room.charAt(0) === ',' ? "globally" : "in " + room) + ": " + link);
-				}.bind(this));
-				return;
-			}
-		}
-		this.say(con, room, text);
-	},
 
 	/**
 	 * General commands
 	 *
 	 * Add custom commands here.
 	 */
-
+	
+	/*
 	tell: 'say',
 	say: function(arg, by, room, con) {
 		if (!this.canUse('say', room, by)) return false;
 		this.say(con, room, stripCommands(arg) + ' (' + by + ' said this)');
 	},
 	joke: function(arg, by, room, con) {
-		if (!this.canUse('joke', room, by) || room.charAt(0) === ',') return false;
+		if (!this.canUse('joke', room, by)) return false;
 		var self = this;
 
 		var reqOpt = {
@@ -433,7 +366,7 @@ exports.commands = {
 			res.on('data', function(chunk) {
 				try {
 					var data = JSON.parse(chunk);
-					self.say(con, room, data.value.joke.replace(/&quot;/g, "\""));
+					self.say(con, room, data.value.joke);
 				} catch (e) {
 					self.say(con, room, 'Sorry, couldn\'t fetch a random joke... :(');
 				}
@@ -449,360 +382,1464 @@ exports.commands = {
 		}
 		choices = choices.filter(function(i) {return (toId(i) !== '')});
 		if (choices.length < 2) return this.say(con, room, (room.charAt(0) === ',' ? '': '/pm ' + by + ', ') + '.choose: You must give at least 2 valid choices.');
-
 		var choice = choices[Math.floor(Math.random()*choices.length)];
 		this.say(con, room, ((this.canUse('choose', room, by) || room.charAt(0) === ',') ? '':'/pm ' + by + ', ') + stripCommands(choice));
 	},
 	usage: 'usagestats',
 	usagestats: function(arg, by, room, con) {
-		if (this.canUse('usagestats', room, by) || room.charAt(0) === ',') {
+		if (this.canUse('usagestat', room, by) || room.charAt(0) === ',') {
 			var text = '';
 		} else {
 			var text = '/pm ' + by + ', ';
 		}
-		text += 'http://www.smogon.com/stats/2015-02/';
+		text += 'http://www.smogon.com/forums/threads/official-smogon-university-simulator-statistics-%E2%80%94-february-2014.3501320/';
 		this.say(con, room, text);
 	},
-	seen: function(arg, by, room, con) { // this command is still a bit buggy
+	seen: function(arg, by, room, con) {
 		var text = (room.charAt(0) === ',' ? '' : '/pm ' + by + ', ');
-		arg = toId(arg);
-		if (!arg || arg.length > 18) return this.say(con, room, text + 'Invalid username.');
-		if (arg === toId(by)) {
+		if (toId(arg) === toId(by)) {
 			text += 'Have you looked in the mirror lately?';
-		} else if (arg === toId(config.nick)) {
+		} else if (toId(arg) === toId(config.nick)) {
 			text += 'You might be either blind or illiterate. Might want to get that checked out.';
-		} else if (!this.chatData[arg] || !this.chatData[arg].seenAt) {
-			text += 'The user ' + arg + ' has never been seen.';
+		} else if (!this.chatData[toId(arg)] || !this.chatData[toId(arg)].lastSeen) {
+			text += 'The user ' + arg.trim() + ' has never been seen.';
 		} else {
-			text += arg + ' was last seen ' + this.getTimeAgo(this.chatData[arg].seenAt) + ' ago' + (
-				this.chatData[arg].lastSeen ? ', ' + this.chatData[arg].lastSeen : '.');
+			text += arg.trim() + ' was last seen ' + this.getTimeAgo(this.chatData[toId(arg)].seenAt) + ' ago, ' + this.chatData[toId(arg)].lastSeen;
 		}
 		this.say(con, room, text);
 	},
-	'8ball': function(arg, by, room, con) {
-		if (this.canUse('8ball', room, by) || room.charAt(0) === ',') {
+	*/
+	
+	broadcast: function(arg, by, room, con) {
+		return
+	},
+	
+	randompike: 'randompoke',
+	randompokemon: 'randompoke',
+	randompoke: function(arg, by, room, con) {
+		if (this.canUse('broadcast', room, by) && (Date.now() - lastBroadcast) < (2 * 1000)) return this.say(con, room, "/pm " + by + ", Per evitare di essere mutata da boTTT ho annullato questo comando, riprova fra 2 secondi");
+		if (this.canUse('broadcast', room, by) || room.charAt(0) === ',') {
 			var text = '';
 		} else {
-			var text = '/pm ' + by + ', ';
+			return this.say(con, room, '/pm ' + by + ', Scrivimi il comando in PM.');
 		}
-
-		var rand = ~~(20 * Math.random()) + 1;
-
-		switch (rand) {
-	 		case 1: text += "Signs point to yes."; break;
-	  		case 2: text += "Yes."; break;
-			case 3: text += "Reply hazy, try again."; break;
-			case 4: text += "Without a doubt."; break;
-			case 5: text += "My sources say no."; break;
-			case 6: text += "As I see it, yes."; break;
-			case 7: text += "You may rely on it."; break;
-			case 8: text += "Concentrate and ask again."; break;
-			case 9: text += "Outlook not so good."; break;
-			case 10: text += "It is decidedly so."; break;
-			case 11: text += "Better not tell you now."; break;
-			case 12: text += "Very doubtful."; break;
-			case 13: text += "Yes - definitely."; break;
-			case 14: text += "It is certain."; break;
-			case 15: text += "Cannot predict now."; break;
-			case 16: text += "Most likely."; break;
-			case 17: text += "Ask again later."; break;
-			case 18: text += "My reply is no."; break;
-			case 19: text += "Outlook good."; break;
-			case 20: text += "Don't count on it."; break;
+		try {
+			var pokedex = require('./pokedex.js').BattlePokedex;
+			var formatsdata = require('./formats-data.js').BattleFormatsData;
+		} catch (e) {
+			return this.say(con, room, 'Si è verificato un errore: riprova fra qualche secondo.');
 		}
-		this.say(con, room, text);
-	},
-
-	/**
-	 * Room specific commands
-	 *
-	 * These commands are used in specific rooms on the Smogon server.
-	 */
-	espaol: 'esp',
-	ayuda: 'esp',
-	esp: function(arg, by, room, con) {
-		// links to relevant sites for the Wi-Fi room 
-		if (config.serverid !== 'showdown') return false;
-		var text = '';
-		if (room = 'espaol') {
-			if (!this.canUse('guia', room, by)) text += '/pm ' + by + ', ';
-		} else if (room.charAt(0) !== ',') {
-			return false;
+		var pokemon = [];
+		var extractedmon = '';
+		var tiers = ["ag", "uber", "ou", "bl", "uu", "bl2", "ru", "bl3", "nu", "pu", "nfe", "lcuber", "lc", "cap", "unreleased"];
+		var selectedTiers = arg.toLowerCase().replace(/[^a-zA-Z0-9,]/g,"").split(",");
+		var tiersSearch = [];
+		for (var j in selectedTiers) {
+			if (tiers.indexOf(selectedTiers[j]) > -1 && tiersSearch.indexOf(selectedTiers[j]) == -1) tiersSearch.push(selectedTiers[j]);
 		}
-		var messages = {
-			reglas: 'Recuerda seguir las reglas de nuestra sala en todo momento: http://ps-salaespanol.weebly.com/reglas.html',
-			faq: 'Preguntas frecuentes sobre el funcionamiento del chat: http://ps-salaespanol.weebly.com/faq.html',
-			faqs: 'Preguntas frecuentes sobre el funcionamiento del chat: http://ps-salaespanol.weebly.com/faq.html',
-			foro: '¡Visita nuestro foro para participar en multitud de actividades! http://ps-salaespanol.proboards.com/',
-			guia: 'Desde este índice (http://ps-salaespanol.proboards.com/thread/575/ndice-de-gu) podrás acceder a toda la información importante de la sala. By: Lost Seso',
-			liga: '¿Tienes alguna duda sobre la Liga? ¡Revisa el **índice de la Liga** aquí!: (http://goo.gl/CxH2gi) By: xJoelituh'
-		};
-		text += (toId(arg) ? (messages[toId(arg)] || '¡Bienvenidos a la comunidad de habla hispana! Si eres nuevo o tienes dudas revisa nuestro índice de guías: http://ps-salaespanol.proboards.com/thread/575/ndice-de-gu') : '¡Bienvenidos a la comunidad de habla hispana! Si eres nuevo o tienes dudas revisa nuestro índice de guías: http://ps-salaespanol.proboards.com/thread/575/ndice-de-gu');
-		this.say(con, room, text);
-	},
-	studio: function(arg, by, room, con) {
-		if (config.serverid !== 'showdown') return false;
-		var text = '';
-		if (room === 'thestudio') {
-			if (!this.canUse('studio', room, by)) text += '/pm ' + by + ', ';
-		} else if (room.charAt(0) !== ',') {
-			return false;
-		}
-		var messages = {
-			plug: '/announce The Studio\'s plug.dj can be found here: https://plug.dj/the-studio/'
-		};
-		this.say(con, room, text + (messages[toId(arg)] || ('Welcome to The Studio, a music sharing room on PS!. If you have any questions, feel free to PM a room staff member. Available commands for .studio: ' + Object.keys(messages).join(', '))));
-	},
-	'switch': function(arg, by, room, con) {
-		if (room !== 'gamecorner' || config.serverid !== 'showdown' || !this.canUse('switch', room, by)) return false;
-		this.say(con, room, 'Taking over the world. Starting with Game Corner. Room deregistered.');
-		this.say(con, room, '/k ' + (toId(arg) || by) + ', O3O YOU HAVE TOUCHED THE SWITCH');
-	},
-	wifi: function(arg, by, room, con) {
-		// links to relevant sites for the Wi-Fi room 
-		if (config.serverid !== 'showdown') return false;
-		var text = '';
-		if (room === 'wifi') {
-			if (!this.canUse('wifi', room, by)) text += '/pm ' + by + ', ';
-		} else if (room.charAt(0) !== ',') {
-			return false;
-		}
-
-		arg = arg.split(',');
-		var msgType = toId(arg[0]);
-		if (!msgType) return this.say(con, room, 'Welcome to the Wi-Fi room! Links can be found here: http://pstradingroom.weebly.com/links.html');
-
-		switch (msgType) {
-		case 'intro': 
-			return this.say(con, room, text + 'Here is an introduction to Wi-Fi: http://tinyurl.com/welcome2wifi');
-		case 'rules': 
-			return this.say(con, room, text + 'The rules for the Wi-Fi room can be found here: http://pstradingroom.weebly.com/rules.html');
-		case 'faq':
-		case 'faqs':
-			return this.say(con, room, text + 'Wi-Fi room FAQs: http://pstradingroom.weebly.com/faqs.html');
-		case 'scammers':
-			return this.say(con, room, text + 'List of known scammers: http://tinyurl.com/psscammers');
-		case 'cloners':
-			return this.say(con, room, text + 'List of approved cloners: http://goo.gl/WO8Mf4');
-		case 'tips':
-			return this.say(con, room, text + 'Scamming prevention tips: http://pstradingroom.weebly.com/scamming-prevention-tips.html');
-		case 'breeders':
-			return this.say(con, room, text + 'List of breeders: http://tinyurl.com/WiFIBReedingBrigade');
-		case 'signup':
-			return this.say(con, room, text + 'Breeders Sign Up: http://tinyurl.com/GetBreeding');
-		case 'bans':
-		case 'banappeals':
-			return this.say(con, room, text + 'Ban appeals: http://tinyurl.com/WifiBanAppeals');
-		case 'lists':
-			return this.say(con, room, text + 'Major and minor list compilation: http://tinyurl.com/WifiSheets');
-		case 'trainers':
-			return this.say(con, room, text + 'List of EV trainers: http://tinyurl.com/WifiEVtrainingCrew');
-		case 'youtube':
-			return this.say(con, room, text + 'Wi-Fi room\'s official YouTube channel: http://tinyurl.com/wifiyoutube');
-		case 'league':
-			return this.say(con, room, text + 'Wi-Fi Room Pokemon League: http://tinyurl.com/wifiroomleague');
-		case 'checkfc':
-			if (!config.googleapikey) return this.say(con, room, text + 'A Google API key has not been provided and is required for this command to work.');
-			if (arg.length < 2) return this.say(con, room, text + 'Usage: .wifi checkfc, [fc]');
-			this.wifiRoom = this.wifiroom || {docRevs: ['', ''], scammers : {}, cloners: []};
-			var self = this;
-			this.getDocMeta('0AvygZBLXTtZZdFFfZ3hhVUplZm5MSGljTTJLQmJScEE', function (err, meta) {
-				if (err) return self.say(con, room, text + 'An error occured while processing your command.');
-				var value = arg[1].replace(/\D/g, '');
-				if (value.length !== 12) return self.say(con, room, text + '"' + arg[1] + '" is not a valid FC.');
-				if (self.wifiRoom.docRevs[1] === meta.version) {
-					value = self.wifiRoom.scammers[value];
-					if (value) return self.say(con, room, text + '**The FC ' + arg[1] + ' belongs to a known scammer: ' + (value.length > 61 ? value + '..' : value) + '.**');
-					return self.say(con, room, text + 'This FC does not belong to a known scammer.')
+		
+		for (var i in formatsdata) {
+			if (formatsdata[i].tier) {
+				if (arg != '') {
+					if (tiersSearch.indexOf(formatsdata[i].tier.toLowerCase()) > -1) {
+						pokemon.push(pokedex[i].species);
+					}
 				}
-				self.wifiRoom.docRevs[1] = meta.version;
-				self.getDocCsv(meta, function (data) {
-					csv(data, function (err, data) {
-						if (err) return self.say(con, room, text + 'An error occured while processing your command.');
-						for (var i = 0, len = data.length; i < len; i++) {
-							var str = data[i][1].replace(/\D/g, '');
-							var strLen = str.length;
-							if (str && strLen > 11) {
-								for (var j = 0; j < strLen; j += 12) {
-									self.wifiRoom.scammers[str.substr(j, 12)] = data[i][0];
+				else {
+					if (formatsdata[i].tier != 'Unreleased' && formatsdata[i].tier != '' && formatsdata[i].tier != 'CAP') {
+						pokemon.push(pokedex[i].species);
+					}
+				}
+			}
+		}
+		
+		if (pokemon.length == 0) return this.say(con, room, "errore");
+		extractedmon = pokemon[Math.floor(Math.random()*pokemon.length)];
+		text += extractedmon;
+		this.say(con, room, text);
+	},
+	randomtier: function(arg, by, room, con) {
+		if (this.canUse('broadcast', room, by) && (Date.now() - lastBroadcast) < (2 * 1000)) return this.say(con, room, "/pm " + by + ", Per evitare di essere mutata da boTTT ho annullato questo comando, riprova fra 2 secondi");
+		if (this.canUse('broadcast', room, by) || room.charAt(0) === ',') {
+			var text = '';
+		} else {
+			return this.say(con, room, '/pm ' + by + ', Scrivimi il comando in PM.');
+		}
+		arg = toId(arg);
+		var tiers = [];
+		try {
+			var formats = require('./formats.js').Formats;
+		} catch (e) {
+			return this.say(con, room, 'Si è verificato un errore: riprova fra qualche secondo.');
+		}
+		if (arg == "all") {
+			for (var i in formats) {
+				if (formats[i].challengeShow != false) tiers.push(formats[i].name);
+			}
+		}
+		else if (arg == "") {
+			tiers = ["Random Battle", "OU", "Ubers", "UU", "RU", "NU", "LC", "Anything Goes", "Random Doubles Battle", "Smogon Doubles", "Random Triples Battle", "Seasonal", "Challenge Cup", "Challenge Cup 1-vs-1", "1v1", "Monotype", "PU", "[Gen 5] OU", "[Gen 1] Random Battle"];
+		}
+		else {
+			return this.say(con, room, "errore");
+		}
+		text += tiers[Math.floor(Math.random()*tiers.length)];
+		this.say(con, room, text);
+	},
+	randomtype: function(arg, by, room, con) {
+		if (this.canUse('broadcast', room, by) && (Date.now() - lastBroadcast) < (2 * 1000)) return this.say(con, room, "/pm " + by + ", Per evitare di essere mutata da boTTT ho annullato questo comando, riprova fra 2 secondi");
+		if (this.canUse('broadcast', room, by) || room.charAt(0) === ',') {
+			var text = '';
+		} else {
+			return this.say(con, room, '/pm ' + by + ', Scrivimi il comando in PM.');
+		}
+		types = ["Normal", "Fire", "Fighting", "Water", "Flying", "Grass", "Poison", "Electric", "Ground", "Psychic", "Rock", "Ice", "Bug", "Dragon", "Ghost", "Dark", "Steel", "Fairy"];
+		text += types[Math.floor(Math.random()*types.length)];
+		this.say(con, room, text);
+	},
+	/*randomteam: function(arg, by, room, con) {
+		if (this.canUse('broadcast', room, by) && (Date.now() - lastBroadcast) < (2 * 1000)) return this.say(con, room, "/pm " + by + ", Per evitare di essere mutata da boTTT ho annullato questo comando, riprova fra 2 secondi");
+		if (this.canUse('randomteam', room, by) || room.charAt(0) === ',') {
+			if (Date.now() - lastBroadcast < 2 * 1000) return this.say(con, room, "/pm " + by + ", Per evitare di essere mutata da boTTT ho annullato questo comando, riprova fra 2 secondi");
+			var text = '';
+		} else {
+			return this.say(con, room, '/pm ' + by + ', Scrivimi il comando in PM.');
+		}
+		try {
+			var pokedex = require('./pokedex.js').BattlePokedex;
+			var formatsdata = require('./formats-data.js').BattleFormatsData;
+		} catch (e) {
+			return this.say(con, room, 'Si è verificato un errore: riprova fra qualche secondo.');
+		}
+		
+		
+	},*/
+	
+	
+    gen: function(arg, by, room, con) {
+		if (this.canUse('broadcast', room, by) && (Date.now() - lastBroadcast) < (2 * 1000)) return this.say(con, room, "/pm " + by + ", Per evitare di essere mutata da boTTT ho annullato questo comando, riprova fra 2 secondi");
+		if (this.canUse('broadcast', room, by) || room.charAt(0) === ',') {
+			var text = '';
+		}
+		else {
+			return this.say(con, room, '/pm ' + by + ', Scrivimi il comando in PM.');
+		}
+		try {
+			var pokedex = require('./pokedex.js').BattlePokedex;
+			var aliases = require('./aliases.js').BattleAliases;
+			var movedex = require('./moves.js').BattleMovedex;
+			var abilities = require('./abilities.js').BattleAbilities;
+			var items = require('./items.js').BattleItems;
+		} catch (e) {
+			return this.say(con, room, 'Si è verificato un errore: riprova fra qualche secondo.');
+		}
+		var arg = toId(arg);
+		if (arg == "") return this.say(con, room, "Generazione di cosa?");
+		if (aliases[arg]) arg = toId(aliases[arg]);
+		if (arg == 'metronome') {
+			text += 'Move: Gen 1; Item: Gen 4';
+		}
+		else if (pokedex[arg]) {
+			if (pokedex[arg].num < 0) text += 'CAP';
+			else if (pokedex[arg].num <= 151) text += 'Gen 1';
+			else if (pokedex[arg].num <= 251) text += 'Gen 2';
+			else if (pokedex[arg].num <= 386) text += 'Gen 3';
+			else if (pokedex[arg].num <= 493) text += 'Gen 4';
+			else if (pokedex[arg].num <= 649) text += 'Gen 5';
+			else text += 'Gen 6';
+		}
+		else if (movedex[arg]) {
+			if (movedex[arg].num <= 165) text += 'Gen 1';
+			else if (movedex[arg].num <= 251) text += 'Gen 2';
+			else if (movedex[arg].num <= 354) text += 'Gen 3';
+			else if (movedex[arg].num <= 467) text += 'Gen 4';
+			else if (movedex[arg].num <= 559) text += 'Gen 5';
+			else if (movedex[arg].num <= 617) text += 'Gen 6';
+			else text += 'CAP';
+		}
+		else if (abilities[arg]) {
+			if (abilities[arg].num <= 0) text += 'CAP';
+			else if (abilities[arg].num <= 76) text += 'Gen 3';
+			else if (abilities[arg].num <= 123) text += 'Gen 4';
+			else if (abilities[arg].num <= 164) text += 'Gen 5';
+			else text += 'Gen 6';
+		}
+		else if (items[arg]) {
+			text += 'Gen ' + items[arg].gen;
+		}
+		else text += 'Nessun Pokemon/mossa/abilità/strumento con questo nome trovato'
+		this.say(con, room, text);
+	},
+	
+	viablemoves: 'randommoves',
+	randommoves: function(arg, by, room, con) {
+		if (this.canUse('broadcast', room, by) && (Date.now() - lastBroadcast) < (2 * 1000)) return this.say(con, room, "/pm " + by + ", Per evitare di essere mutata da boTTT ho annullato questo comando, riprova fra 2 secondi");
+		if (this.canUse('broadcast', room, by) || room.charAt(0) === ',') {
+			var text = '';
+		}
+		else {
+			return this.say(con, room, '/pm ' + by + ', Scrivimi il comando in PM.');
+		}
+		try {
+			var aliases = require('./aliases.js').BattleAliases;
+			var formatsdata = require('./formats-data.js').BattleFormatsData;
+			var movedex = require('./moves.js').BattleMovedex;
+		} catch (e) {
+			return this.say(con, room, 'Si è verificato un errore: riprova fra qualche secondo.');
+		}
+		arg = arg.toLowerCase().replace(/[^a-zA-Z0-9,]/g,"").split(",");
+		var pokemon = arg[0];
+		var doubleAlts = ["double", "doubles", "2", "triple", "triples", "3"];
+		if (arg[1] && doubleAlts.indexOf(arg[1]) > -1) {
+			text += "__Random doubles/triples moves__: ";
+			var whichRandom = "randomDoubleBattleMoves";
+		}
+		else {
+			text += "__Random singles moves__: ";
+			var whichRandom = "randomBattleMoves";
+		}
+		if (aliases[pokemon]) pokemon = aliases[pokemon].toLowerCase().replace(/[^a-zA-Z0-9]/g,"");
+		if (formatsdata[pokemon]) {
+			moves = '';
+			for (var i in formatsdata[pokemon][whichRandom]) {
+				moves += ', ' + movedex[formatsdata[pokemon][whichRandom][i]].name;
+			}
+			if (moves == '') text += 'none';
+			else text += moves.substring(2);
+		}
+		else {
+			text += "Pokémon non trovato";
+		}
+		this.say(con, room, text);
+	},
+	eventdex: 'event',
+	eventdata: 'event',
+	event: function(arg, by, room, con) {
+		if (this.canUse('broadcast', room, by) && (Date.now() - lastBroadcast) < (2 * 1000)) return this.say(con, room, "/pm " + by + ", Per evitare di essere mutata da boTTT ho annullato questo comando, riprova fra 2 secondi");
+		if (this.canUse('broadcast', room, by) || room.charAt(0) === ',') {
+			var text = '';
+		}
+		else {
+			return this.say(con, room, '/pm ' + by + ', Scrivimi il comando in PM.');
+		}
+		try {
+			var aliases = require('./aliases.js').BattleAliases;
+			var formatsdata = require('./formats-data.js').BattleFormatsData;
+			var movedex = require('./moves.js').BattleMovedex;
+		} catch (e) {
+			return this.say(con, room, 'Si è verificato un errore: riprova fra qualche secondo.');
+		}
+		arg = arg.toLowerCase().replace(/[^a-zA-Z0-9,]/g,"").split(",");
+		var pokemon = arg[0];
+		if (!pokemon) return this.say(con, room, "Che Pokémon devo cercare?");
+		if (aliases[pokemon]) pokemon = aliases[pokemon].toLowerCase().replace(/[^a-zA-Z0-9]/g,"");
+		if (!formatsdata[pokemon]) return this.say(con, room, "Pokémon non trovato");
+		if (!formatsdata[pokemon].eventPokemon) return this.say(con, room, "Non esistono eventi di " + pokemon);
+		var eventPokemon = formatsdata[pokemon].eventPokemon;
+		if (formatsdata[pokemon]) {
+			if (arg[1]) {
+				var eventNumber = Number(arg[1]);
+				if (!isNaN(eventNumber) && eventNumber <= 1000 && eventNumber % 1 == 0) {
+					eventNumber = Number(eventNumber);
+					if (!eventPokemon[eventNumber]) return this.say(con, room, "Non esiste l'evento numero " + eventNumber + " di " + pokemon + ". Quello più recente è il numero " + eventPokemon.length - 1);
+					eventNumber = eventPokemon[eventNumber];
+					var text = "Gen " + eventNumber.generation + " event";
+					text += (eventNumber.abilities ? ", " + eventNumber.abilities.join("/") : "");
+					text += (eventNumber.isHidden ? ", hidden ability" : "");
+					text += (eventNumber.nature ? ", " + eventNumber.nature.toLowerCase() + " nature" : "");
+					text += (eventNumber.moves ? ", " + eventNumber.moves.join("/") : "");
+					text += (eventNumber.level ? ", level " + eventNumber.level : "");
+					text += (eventNumber.gender ? ", " + (eventNumber.gender == "M" ? "male" : "female") : "");
+					text += (eventNumber.shiny ? ", shiny" : "");
+					
+					return this.say(con, room, text);
+				}
+				return this.say(con, room, "Errore: il numero dell'evento che hai inserito o non è un numero, o è troppo grande, o non è intero.");
+			}
+			return this.say(con, room, "Esistono " + eventPokemon.length.toString() + " eventi di " + pokemon + " (0 - " + (eventPokemon.length - 1).toString() + ")");
+		}
+		else return this.say(con, room, "Pokémon non trovato");
+	},
+	
+	trad: function(arg, by, room, con) {
+		if (this.canUse('broadcast', room, by) && (Date.now() - lastBroadcast) < (2 * 1000)) return this.say(con, room, "/pm " + by + ", Per evitare di essere mutata da boTTT ho annullato questo comando, riprova fra 2 secondi");
+		if (this.canUse('broadcast', room, by) || room.charAt(0) === ',') {
+		}
+		else {
+			return this.say(con, room, '/pm ' + by + ', Scrivimi il comando in PM.');
+		}
+		try {
+			var trad = require('./tradobject.js').trad;
+			var aliases = require('./aliases.js').BattleAliases;
+		} catch (e) {
+			return this.say(con, room, 'Si è verificato un errore: riprova fra qualche secondo.');
+		}
+		if (parola == "") return this.say(con, room, "Cosa devo tradurre?");
+		var parola = arg.toLowerCase().replace(/[^a-z0-9àèéìòù]/g,"");
+		if (aliases[parola]) var aliasParola = aliases[parola].toLowerCase().replace(/[^a-z0-9àèéìòù]/g,"");
+		
+		var results = [];
+		
+		//if (parola == "metronome") return this.say(con, room, "metronomo (item), plessimetro (move)");
+		
+		for (var i in trad) {
+			for (var j in trad[i]) {
+				if (trad[i][j].en.replace(/[^a-z0-9àèéìòù]/g,"") == parola) results.push({"trad": trad[i][j].it, "cat": i});
+				else if (aliasParola && trad[i][j].en.replace(/[^a-z0-9àèéìòù]/g,"") == aliasParola) results.push({"trad": trad[i][j].it, "cat": i});
+				else if (trad[i][j].it.replace(/[^a-z0-9àèéìòù]/g,"") == parola) results.push({"trad": trad[i][j].en, "cat": i});
+			}
+		}
+		
+		if (results.length) {
+			if (results.length === 1) return this.say(con, room, results[0].trad);
+			var resultstext = "";
+			for (var k in results) {
+				resultstext += results[k].trad + " (" + results[k].cat + ")";
+				if (k < results.length - 1) resultstext += ", ";
+			}
+			return this.say(con, room, resultstext);
+		}
+		return this.say(con, room, "Non trovato");
+	},
+	heatcrash: 'heavyslam',
+	heavyslam: function(arg, by, room, con) {
+		if (this.canUse('broadcast', room, by) && (Date.now() - lastBroadcast) < (2 * 1000)) return this.say(con, room, "/pm " + by + ", Per evitare di essere mutata da boTTT ho annullato questo comando, riprova fra 2 secondi");
+		if (this.canUse('broadcast', room, by) || room.charAt(0) === ',') {
+			var text = '';
+		}
+		else {
+			return this.say(con, room, '/pm ' + by + ', Scrivimi il comando in PM.');
+		}
+		try {
+			var pokedex = require('./pokedex.js').BattlePokedex;
+			var aliases = require('./aliases.js').BattleAliases;
+		} catch (e) {
+			return this.say(con, room, 'Si è verificato un errore: riprova fra qualche secondo.');
+		}
+		var pokemon = arg.split(',');
+		pokemon[0] = toId(pokemon[0]);
+		pokemon[1] = toId(pokemon[1]);
+		if (aliases[pokemon[0]]) pokemon[0] = toId(aliases[pokemon[0]]);
+		if (aliases[pokemon[1]]) pokemon[1] = toId(aliases[pokemon[1]]);
+		if (pokedex[pokemon[0]]) var weight0 = pokedex[pokemon[0]].weightkg;
+		else return this.say(con, room, "Pokémon attaccante non trovato");
+		if (pokedex[pokemon[1]]) var weight1 = pokedex[pokemon[1]].weightkg;
+		else return this.say(con, room, "Pokémon difensore non trovato");
+		
+		text += "Heavy slam/Heat crash base power: ";
+		if (weight0 / weight1 <= 2) text += "40";
+		else if (weight0 / weight1 <= 3) text += "60";
+		else if (weight0 / weight1 <= 4) text += "80";
+		else if (weight0 / weight1 <= 5) text += "100";
+		else text += "120";
+		this.say(con, room, text);
+	},
+	
+	preevo: 'prevo',
+	prevo: function(arg, by, room, con) {
+		if (this.canUse('broadcast', room, by) && (Date.now() - lastBroadcast) < (2 * 1000)) return this.say(con, room, "/pm " + by + ", Per evitare di essere mutata da boTTT ho annullato questo comando, riprova fra 2 secondi");
+		if (this.canUse('broadcast', room, by) || room.charAt(0) === ',') {
+			var text = '';
+		}
+		else {
+			return this.say(con, room, '/pm ' + by + ', Scrivimi il comando in PM.');
+		}
+		try {
+			var pokedex = require('./pokedex.js').BattlePokedex;
+			var aliases = require('./aliases.js').BattleAliases;
+		} catch (e) {
+			return this.say(con, room, 'Si è verificato un errore: riprova fra qualche secondo.');
+		}
+		var pokemon = toId(arg);
+		if (aliases[pokemon]) pokemon = toId(aliases[pokemon]);
+		if (pokedex[pokemon]) {
+			if (pokedex[pokemon].prevo) {
+				text += pokedex[pokemon].prevo;
+			}
+			else text += pokemon + ' non ha una pre-evoluzione';
+		}
+		else text += "Pokémon non trovato";
+		this.say(con, room, text);
+	},
+	
+	priority: function(arg, by, room, con) {
+		if (this.canUse('broadcast', room, by) && (Date.now() - lastBroadcast) < (2 * 1000)) return this.say(con, room, "/pm " + by + ", Per evitare di essere mutata da boTTT ho annullato questo comando, riprova fra 2 secondi");
+		if (this.canUse('broadcast', room, by) || room.charAt(0) === ',') {
+			var text = '';
+		}
+		else {
+			return this.say(con, room, '/pm ' + by + ', Scrivimi il comando in PM.');
+		}
+		try {
+			var pokedex = require('./pokedex.js').BattlePokedex;
+			var movedex = require('./moves.js').BattleMovedex;
+			var learnsets = require('./learnsets-g6.js').BattleLearnsets;
+			var aliases = require('./aliases.js').BattleAliases;
+		} catch (e) {
+			return this.say(con, room, 'Si è verificato un errore: riprova fra qualche secondo.');
+		}
+		var arg = toId(arg);
+		if (aliases[arg]) arg = toId(aliases[arg]);
+
+		if (pokedex[arg]) {
+			var prioritymoves = [];
+			var pokemonToCheck = [arg];
+			var i = true;
+			while (i) {
+				if (pokedex[pokemonToCheck[pokemonToCheck.length-1]].prevo) pokemonToCheck.push(pokedex[pokemonToCheck[pokemonToCheck.length-1]].prevo.toLowerCase());
+				else i = false;
+			}
+			for (var j in pokemonToCheck) {
+				if (learnsets[pokemonToCheck[j]]) {
+					for (var k in learnsets[pokemonToCheck[j]].learnset) {
+						if (movedex[k]) {
+							if (movedex[k].priority > 0 && movedex[k].basePower > 0) {
+								if (prioritymoves.indexOf(movedex[k].name) == -1) {
+									prioritymoves.push(movedex[k].name);
 								}
 							}
 						}
-						value = self.wifiRoom.scammers[value];
-						if (value) return self.say(con, room, text + '**The FC ' + arg[1] + ' belongs to a known scammer: ' + (value.length > 61 ? value.substr(0, 61) + '..' : value) + '.**');
-						return self.say(con, room, 'This FC does not belong to a known scammer.');
-					});
-				});
-			});
-			break;
-		/*
-		case 'ocloners':
-		case 'onlinecloners':
-			if (!config.googleapikey) return this.say(con, room, text + 'A Google API key has not been provided and is required for this command to work.');
-			this.wifiRoom = this.wifiroom || {docRevs: ['', ''], scammers : {}, cloners: []};
-			var self = this;
-			self.getDocMeta('0Avz7HpTxAsjIdFFSQ3BhVGpCbHVVdTJ2VVlDVVV6TWc', function (err, meta) {
-				if (err) {
-					console.log(err);
-					return self.say(con, room, text + 'An error occured while processing your command. Please report this!');
+					}
 				}
-				text = '/pm ' + by + ', ';
-				if (self.wifiRoom.docRevs[0] == meta.version) {
-					var found = [];
-					for (var i in self.wifiRoom.cloners) {
-						if (self.chatData[toId(self.wifiRoom.cloners[i][0])]) {
-							found.push('Name: ' + self.wifiRoom.cloners[i][0] + ' | FC: ' + self.wifiRoom.cloners[i][1] + ' | IGN: ' + self.wifiRoom.cloners[i][2]);
-						}
-					}
-					if (!found.length) {
-						self.say(con, room, text + 'No cloners were found online.');
-						return;
-					}
-					var foundstr = found.join(' ');
-					if(foundstr.length > 266) {
-						self.uploadToHastebin("The following cloners are online :\n\n" + found.join('\n'), function (link) {
-							self.say(con, room, (room.charAt(0) === ',' ? "" : "/pm " + by + ", ") + link);
-						});
-						return;
-					}
-					self.say(con, room, by, "The following cloners are online :\n\n" + foundstr);
-					return;
-				}
-				self.say(con, room, text + 'Cloners List changed. Updating...');
-				self.wifiRoom.docRevs[0] = meta.version;
-				self.getDocCsv(meta, function (data) {
-					csv(data, function (err, data) {
-						if (err) {
-							console.log(err);
-							this.say(con, room, text + 'An error occured while processing your command. Please report this!');
-							return;
-						}
-						data.forEach(function (ent) {
-							var str = ent[1].replace(/\D/g, '');
-							if (str && str.length >= 12) {
-								self.wifiRoom.cloners.push([ent[0], ent[1], ent[2]]);
-							}
-						});
-						var found = [];
-						for (var i in self.wifiRoom.cloners) {
-							if (self.chatData[toId(self.wifiRoom.cloners[i][0])]) {
-								found.push('Name: ' + self.wifiRoom.cloners[i][0] + ' | FC: ' + self.wifiRoom.cloners[i][1] + ' | IGN: ' + self.wifiRoom.cloners[i][2]);
+			}
+			prioritymoves.sort();
+			for (var l in prioritymoves) {
+				text += prioritymoves[l];
+				if (l != prioritymoves.length-1) text += ', ';
+			}
+		}
+		else {
+			text += "Non trovato";
+		}
+		if (text == '') text = 'Nessuna priority move trovata';
+		this.say(con, room, text);
+	},
+	boosting: function(arg, by, room, con) {
+		if (this.canUse('broadcast', room, by) && (Date.now() - lastBroadcast) < (2 * 1000)) return this.say(con, room, "/pm " + by + ", Per evitare di essere mutata da boTTT ho annullato questo comando, riprova fra 2 secondi");
+		if (this.canUse('broadcast', room, by) || room.charAt(0) === ',') {
+			var text = '';
+		}
+		else {
+			return this.say(con, room, '/pm ' + by + ', Scrivimi il comando in PM.');
+		}
+		try {
+			var pokedex = require('./pokedex.js').BattlePokedex;
+			var movedex = require('./moves.js').BattleMovedex;
+			var learnsets = require('./learnsets-g6.js').BattleLearnsets;
+			var aliases = require('./aliases.js').BattleAliases;
+		} catch (e) {
+			return this.say(con, room, 'Si è verificato un errore: riprova fra qualche secondo.');
+		}
+		var arg = toId(arg);
+		if (aliases[arg]) arg = toId(aliases[arg]);
+
+		if (pokedex[arg]) {
+			var boostingmoves = [];
+			var pokemonToCheck = [arg];
+			var i = true;
+			while (i) {
+				if (pokedex[pokemonToCheck[pokemonToCheck.length-1]].prevo) pokemonToCheck.push(pokedex[pokemonToCheck[pokemonToCheck.length-1]].prevo);
+				else i = false;
+			}
+			for (var j in pokemonToCheck) {
+				if (learnsets[pokemonToCheck[j]]) {
+					for (var k in learnsets[pokemonToCheck[j]].learnset) {
+						if (movedex[k]) {
+							if ((movedex[k].boosts && movedex[k].target == 'self' && k != 'doubleteam' && k != 'minimize') || k == 'bellydrum') {
+								if (boostingmoves.indexOf(movedex[k].name) == -1) {
+									boostingmoves.push(movedex[k].name);
+								}
 							}
 						}
-						if (!found.length) {
-							self.say(con, room, text + 'No cloners were found online.');
-							return;
+					}
+				}
+			}
+			boostingmoves.sort();
+			for (var l in boostingmoves) {
+				text += boostingmoves[l];
+				if (l != boostingmoves.length-1) text += ', ';
+			}
+		}
+		else {
+			text += "Non trovato";
+		}
+		if (text == '') text = 'Nessuna boosting move trovata';
+		this.say(con, room, text);
+	},
+	recovery: function(arg, by, room, con) {
+		if (this.canUse('broadcast', room, by) && (Date.now() - lastBroadcast) < (2 * 1000)) return this.say(con, room, "/pm " + by + ", Per evitare di essere mutata da boTTT ho annullato questo comando, riprova fra 2 secondi");
+		if (this.canUse('broadcast', room, by) || room.charAt(0) === ',') {
+			var text = '';
+		}
+		else {
+			return this.say(con, room, '/pm ' + by + ', Scrivimi il comando in PM.');
+		}
+		try {
+			var pokedex = require('./pokedex.js').BattlePokedex;
+			var movedex = require('./moves.js').BattleMovedex;
+			var learnsets = require('./learnsets-g6.js').BattleLearnsets;
+			var aliases = require('./aliases.js').BattleAliases;
+		} catch (e) {
+			return this.say(con, room, 'Si è verificato un errore: riprova fra qualche secondo.');
+		}
+		var arg = toId(arg);
+		if (aliases[arg]) arg = toId(aliases[arg]);
+
+		if (pokedex[arg]) {
+			var recoverymoves = [];
+			var drainmoves = [];
+			var pokemonToCheck = [arg];
+			var i = true;
+			while (i) {
+				if (pokedex[pokemonToCheck[pokemonToCheck.length-1]].prevo) pokemonToCheck.push(pokedex[pokemonToCheck[pokemonToCheck.length-1]].prevo);
+				else i = false;
+			}
+			for (var j in pokemonToCheck) {
+				if (learnsets[pokemonToCheck[j]]) {
+					for (var k in learnsets[pokemonToCheck[j]].learnset) {
+						if (movedex[k]) {
+							if (movedex[k].heal || k == "synthesis" || k == "moonlight" || k == "morningsun" || k == "wish" || k == "swallow") {
+								if (recoverymoves.indexOf(movedex[k].name) == -1) {
+									recoverymoves.push(movedex[k].name);
+								}
+							}
+							else if (movedex[k].drain) {
+								if (drainmoves.indexOf(movedex[k].name) == -1) {
+									drainmoves.push(movedex[k].name);
+								}
+							}
 						}
-						var foundstr = found.join(' ');
-						if (foundstr.length > 266) {
-							self.uploadToHastebin("The following cloners are online :\n\n" + found.join('\n'), function (link) {
-								self.say(con, room, (room.charAt(0) === ',' ? "" : "/pm " + by + ", ") + link);
-							});
-							return;
+					}
+				}
+			}
+			recoverymoves.sort();
+			for (var l in recoverymoves) {
+				text += recoverymoves[l];
+				if (l != recoverymoves.length-1 || drainmoves.length > 0) text += ', ';
+			}
+			if (drainmoves.length > 0) {
+				drainmoves.sort();
+				text += '__';
+				for (var k in drainmoves) {
+					text += drainmoves[k];
+					if (k != drainmoves.length-1) text += ', ';
+				}
+				text += '__';
+			}
+		}
+		else {
+			text += "Non trovato";
+		}
+		if (text == '') text = 'Nessuna recovery move trovata';
+		this.say(con, room, text);
+	},
+	mexican: 'status',
+	status: function(arg, by, room, con) {
+		if (this.canUse('broadcast', room, by) && (Date.now() - lastBroadcast) < (2 * 1000)) return this.say(con, room, "/pm " + by + ", Per evitare di essere mutata da boTTT ho annullato questo comando, riprova fra 2 secondi");
+		if (this.canUse('broadcast', room, by) || room.charAt(0) === ',') {
+			var text = '';
+		}
+		else {
+			return this.say(con, room, '/pm ' + by + ', Scrivimi il comando in PM.');
+		}
+		try {
+			var pokedex = require('./pokedex.js').BattlePokedex;
+			var movedex = require('./moves.js').BattleMovedex;
+			var learnsets = require('./learnsets-g6.js').BattleLearnsets;
+			var aliases = require('./aliases.js').BattleAliases;
+		} catch (e) {
+			return this.say(con, room, 'Si è verificato un errore: riprova fra qualche secondo.');
+		}
+		var arg = toId(arg);
+		if (aliases[arg]) arg = toId(aliases[arg]);
+
+		if (pokedex[arg]) {
+			var mexicanmoves = [];
+			var pokemonToCheck = [arg];
+			var i = true;
+			while (i) {
+				if (pokedex[pokemonToCheck[pokemonToCheck.length-1]].prevo) pokemonToCheck.push(pokedex[pokemonToCheck[pokemonToCheck.length-1]].prevo);
+				else i = false;
+			}
+			for (var j in pokemonToCheck) {
+				if (learnsets[pokemonToCheck[j]]) {
+					for (var k in learnsets[pokemonToCheck[j]].learnset) {
+						if (movedex[k]) {
+							if (movedex[k].status || (movedex[k].volatileStatus && movedex[k].volatileStatus == 'confusion') || (movedex[k].secondary && movedex[k].secondary.chance == 100 && (movedex[k].secondary.status || movedex[k].secondary.volatileStatus == 'confusion'))) {
+								if (mexicanmoves.indexOf(movedex[k].name) == -1) {
+									mexicanmoves.push(movedex[k].name);
+								}
+							}
 						}
-						self.say(con, room, by, "The following cloners are online :\n\n" + foundstr);
-					});
-				});
-			});
-			break;
+					}
+				}
+			}
+			mexicanmoves.sort();
+			for (var l in mexicanmoves) {
+				text += mexicanmoves[l];
+				if (l != mexicanmoves.length-1) text += ', ';
+			}
+		}
+		else {
+			text += "Non trovato";
+		}
+		if (text == '') text = 'Nessuna status move trovata';
+		this.say(con, room, text);
+	},
+	hazards: 'hazard',
+	hazard: function(arg, by, room, con) {
+		if (this.canUse('broadcast', room, by) && (Date.now() - lastBroadcast) < (2 * 1000)) return this.say(con, room, "/pm " + by + ", Per evitare di essere mutata da boTTT ho annullato questo comando, riprova fra 2 secondi");
+		if (this.canUse('broadcast', room, by) || room.charAt(0) === ',') {
+			var text = '';
+		}
+		else {
+			return this.say(con, room, '/pm ' + by + ', Scrivimi il comando in PM.');
+		}
+		try {
+			var pokedex = require('./pokedex.js').BattlePokedex;
+			var movedex = require('./moves.js').BattleMovedex;
+			var learnsets = require('./learnsets-g6.js').BattleLearnsets;
+			var aliases = require('./aliases.js').BattleAliases;
+		} catch (e) {
+			return this.say(con, room, 'Si è verificato un errore: riprova fra qualche secondo.');
+		}
+		var arg = toId(arg);
+		if (aliases[arg]) arg = toId(aliases[arg]);
+
+		if (pokedex[arg]) {
+			var hazards = [];
+			var pokemonToCheck = [arg];
+			var i = true;
+			while (i) {
+				if (pokedex[pokemonToCheck[pokemonToCheck.length-1]].prevo) pokemonToCheck.push(pokedex[pokemonToCheck[pokemonToCheck.length-1]].prevo);
+				else i = false;
+			}
+			for (var j in pokemonToCheck) {
+				if (learnsets[pokemonToCheck[j]]) {
+					for (var k in learnsets[pokemonToCheck[j]].learnset) {
+						if (movedex[k]) {
+							if (k == "stealthrock" || k == "spikes" || k == "toxicspikes" || k == "stickyweb") {
+								if (hazards.indexOf(movedex[k].name) == -1) {
+									hazards.push(movedex[k].name);
+								}
+							}
+						}
+					}
+				}
+			}
+			hazards.sort();
+			for (var l in hazards) {
+				text += hazards[l];
+				if (l != hazards.length-1) text += ', ';
+			}
+		}
+		else {
+			text += "Non trovato";
+		}
+		if (text == '') text = 'Nessuna hazard trovata';
+		this.say(con, room, text);
+	},
+	typelearn: function(arg, by, room, con) {
+		if (this.canUse('broadcast', room, by) && (Date.now() - lastBroadcast) < (2 * 1000)) return this.say(con, room, "/pm " + by + ", Per evitare di essere mutata da boTTT ho annullato questo comando, riprova fra 2 secondi");
+		if (this.canUse('broadcast', room, by) || room.charAt(0) === ',') {
+			var text = '';
+		}
+		else {
+			return this.say(con, room, '/pm ' + by + ', Scrivimi il comando in PM.');
+		}
+		try {
+			var pokedex = require('./pokedex.js').BattlePokedex;
+			var aliases = require('./aliases.js').BattleAliases;
+			var movedex = require('./moves.js').BattleMovedex;
+			var learnsets = require('./learnsets-g6.js').BattleLearnsets;
+		} catch (e) {
+			return this.say(con, room, 'Si è verificato un errore: riprova fra qualche secondo.');
+		}
+		
+		arg = arg.toLowerCase().replace(/[^a-z0-9,]/g, '').split(',');
+		if (!arg[1]) return this.say(con, room, 'Scrivi il Pokémon e il tipo');
+		arg[0] = arg[0].replace(/[+-]/g,"");
+		arg[1] = arg[1].replace(/[+-]/g,"");
+		if (aliases[arg[0]]) arg[0] = toId(aliases[arg[0]]);
+		if (aliases[arg[1]]) arg[1] = toId(aliases[arg[1]]);
+		
+		if (pokedex[arg[1]]) {
+			var pokemonarg = 1;
+			var typearg = 0;
+		}
+		else if (pokedex[arg[0]]) {
+			var pokemonarg = 0;
+			var typearg = 1;
+		}
+		else return this.say(con, room, 'Pokémon non trovato');
+		var types = ['bug', 'dark', 'dragon', 'electric', 'fairy', 'fighting', 'fire', 'flying', 'ghost', 'grass', 'ground', 'ice', 'normal', 'poison', 'psychic', 'rock', 'steel', 'water'];
+		if (types.indexOf(arg[typearg]) == -1) return this.say(con, room, 'Tipo non trovato');
+		if (pokedex[arg[pokemonarg]]) {
+			var typemoves = [];
+			var pokemonToCheck = [arg[pokemonarg]];
+			var i = true;
+			while (i) {
+				if (pokedex[pokemonToCheck[pokemonToCheck.length-1]].prevo) pokemonToCheck.push(pokedex[pokemonToCheck[pokemonToCheck.length-1]].prevo);
+				else i = false;
+			}
+			var exceptsmoves = ['beatup', 'crushgrip', 'electroball', 'flail', 'frustration', 'grassknot', 'gyroball', 'heatcrash', 'heavyslam', 'lowkick', 'naturalgift', 'punishment', 'return', 'reversal', 'spitup', 'trumpcard', 'wringout'];
+			for (var j in pokemonToCheck) {
+				if (learnsets[pokemonToCheck[j]]) {
+					for (var k in learnsets[pokemonToCheck[j]].learnset) {
+						if (movedex[k]) {
+							if (movedex[k].type.toLowerCase() == arg[typearg] && (movedex[k].basePower > 0 || exceptsmoves.indexOf(k) > -1)) {
+								if (typemoves.indexOf(movedex[k].name) == -1) {
+									typemoves.push(movedex[k].name);
+								}
+							}
+						}
+					}
+				}
+			}
+			typemoves.sort();
+			for (var l in typemoves) {
+				text += typemoves[l];
+				if (l != typemoves.length-1) text += ', ';
+			}
+		}
+		else {
+			text += "Non trovato";
+		}
+		if (text == '') text = 'Nessuna ' + arg[typearg] + ' move trovata';
+		this.say(con, room, text);
+	},
+	ds: 'dexsearch',
+	dsearch: 'dexsearch',
+	dexsearch: function(arg, by, room, con) {
+		if (this.canUse('broadcast', room, by) && (Date.now() - lastBroadcast) < (2 * 1000)) return this.say(con, room, "/pm " + by + ", Per evitare di essere mutata da boTTT ho annullato questo comando, riprova fra 2 secondi");
+		if (this.canUse('broadcast', room, by) || room.charAt(0) === ',') {
+			var text = '';
+		}
+		else {
+			return this.say(con, room, '/pm ' + by + ', Scrivimi il comando in PM.');
+		}
+		try {
+			var pokedex = require('./pokedex.js').BattlePokedex;
+			var movedex = require('./moves.js').BattleMovedex;
+			var abilities = require('./abilities.js').BattleAbilities;
+			var formatsdata = require('./formats-data.js').BattleFormatsData;
+			var learnsets = require('./learnsets-g6.js').BattleLearnsets;
+		} catch (e) {
+			return this.say(con, room, 'Si è verificato un errore: riprova fra qualche secondo.');
+		}
+		if (arg == '') return this.say(con, room, "Inserisci almeno un parametro di ricerca");
+		arg = arg.toLowerCase().replace(/[^a-z0-9,<>]/g, '').split(',');
+		var j = 0;
+		var k = 0;
+		var checkTier = false;
+		var checkMove = false;
+		var checkAbility = false;
+		var checkType1 = false;
+		var checkType2 = false;
+		var checkBaseSpecies = false;
+		var statNumber = false;
+		var statWhat = false;
+		var checkStat = false;
+		var tiers = ['uber', 'ou', 'bl', 'uu', 'bl2', 'ru', 'bl3', 'nu', 'pu', 'nfe', 'lcuber', 'lc'];
+		var tierNumber = 0;
+		var tierFirst = true;
+		var pokemonToCheck = [];
+		var stop = false;
+		var baseSpecies = false;
+		
+		var result = new Array();
+		for (var i = 0; i < arg.length; i++) {
+			if (movedex[arg[i]]) {
+				for (j in pokedex) {
+					if (learnsets[j]) baseSpecies = j;
+					else if (learnsets[pokedex[j].baseSpecies.toLowerCase().replace(/[^a-z0-9]/g, '')]) baseSpecies = pokedex[j].baseSpecies.toLowerCase().replace(/[^a-z0-9]/g, '');
+					else baseSpecies = false;
+					pokemonToCheck = [baseSpecies];
+					var g = true;
+					while (g) {
+						if (pokedex[pokemonToCheck[pokemonToCheck.length-1]] && pokedex[pokemonToCheck[pokemonToCheck.length-1]].prevo) pokemonToCheck.push(pokedex[pokemonToCheck[pokemonToCheck.length-1]].prevo.toLowerCase());
+						else g = false;
+					}
+					for (f in pokemonToCheck) {
+						stop = false;
+						for (k in learnsets[pokemonToCheck[f]].learnset) {
+							checkMove = k == arg[i];
+							if (checkMove) {
+								result.push(pokedex[j].species);
+								stop = true;
+							}
+						}
+						if (stop) break;
+					}
+				}
+				pokemonToCheck = [];
+			}
+			else if (abilities[arg[i]]) {
+				for (j in pokedex) {
+					for (k in pokedex[j].abilities) {
+						checkAbility = pokedex[j].abilities[k] == abilities[arg[i]].name;
+						if (checkAbility) {
+							result.push(pokedex[j].species);
+						}
+					}
+				}
+			}
+			else if (arg[i].substring(arg[i].length - 4) == 'type') {
+				for (j in pokedex) {
+					checkType1 = pokedex[j].types[0].toLowerCase() == arg[i].substring(0, arg[i].length - 4);
+					if (pokedex[j].types[1]) {
+						checkType2 = pokedex[j].types[1].toLowerCase() == arg[i].substring(0, arg[i].length - 4);
+					}
+					else {
+						checkType2 = false;
+					}
+					if ((checkType1 || checkType2)) {
+						result.push(pokedex[j].species);
+					}
+				}
+			}
+			else if (arg[i].charAt(2) == '>' || arg[i].charAt(3) == '>' || arg[i].charAt(2) == '<' || arg[i].charAt(3) == '<') {
+				for (j in pokedex) {
+					if (arg[i].indexOf('>') != -1) {
+						statNumber = Number(arg[i].substring(arg[i].indexOf('>') + 1));
+						statWhat = arg[i].substring(0, arg[i].indexOf('>'));
+						if (statWhat == "bst") {
+							var stat = 0;
+							for (var s in pokedex[j].baseStats) {
+								stat += pokedex[j].baseStats[s];
+							}
+						}
+						else {
+							stat = pokedex[j].baseStats[statWhat];
+						}
+						checkStat = stat > statNumber;
+					}
+					else {
+						statNumber = Number(arg[i].substring(arg[i].indexOf('<') + 1));
+						statWhat = arg[i].substring(0, arg[i].indexOf('<'));
+						if (statWhat == "bst") {
+							var stat = 0;
+							for (var s in pokedex[j].baseStats) {
+								stat += pokedex[j].baseStats[s];
+							}
+						}
+						else {
+							stat = pokedex[j].baseStats[statWhat];
+						}
+						checkStat = stat < statNumber;
+					}
+					if (checkStat) {
+						result.push(pokedex[j].species);
+					}
+				}
+			}
+			else if (tiers.indexOf(arg[i]) != -1) {
+				for (j in pokedex) {
+					if (formatsdata[j] && formatsdata[j].tier) {
+						if (arg[i] == formatsdata[j].tier.toLowerCase().replace(' ','')) {
+							result.push(pokedex[j].species);
+						}
+					}
+				}
+				if (!tierFirst) tierNumber++;
+				else tierFirst = false;
+			}
+			else if (arg[i] == 'mega') {
+				for (j in pokedex) {
+					if (pokedex[j].forme && pokedex[j].forme.indexOf('Mega') > -1) {
+						result.push(pokedex[j].species);
+					}
+				}
+			}
+			else return this.say(con, room, "'" + arg[i] + "' could not be found in any of the search categories.");
+		}
+		result = result.sort();
+		var countresult = {};
+		result.forEach(function(r) {
+			countresult[r] = (countresult[r] || 0) + 1;
+		});
+		var text = '';
+		for (var l in countresult) {
+			if (countresult[l] == i - tierNumber) {
+				text += ', ' + l;
+			}
+		}
+		text = text.substring(2);
+		if (text.length > 200) {
+			text = text.substring(0, 200);
+			text = text.substring(0, text.lastIndexOf(','));
+			text += "....";
+		}
+		if (text == '') text = "No Pokémon found.";
+		this.say(con, room, text);
+	},
+	stat: function(arg, by, room, con) {
+		if (this.canUse('broadcast', room, by) && (Date.now() - lastBroadcast) < (2 * 1000)) return this.say(con, room, "/pm " + by + ", Per evitare di essere mutata da boTTT ho annullato questo comando, riprova fra 2 secondi");
+		if (this.canUse('broadcast', room, by) || room.charAt(0) === ',') {
+			var text = '';
+		}
+		else {
+			return this.say(con, room, '/pm ' + by + ', Scrivimi il comando in PM.');
+		}
+		try {
+			var pokedex = require('./pokedex.js').BattlePokedex;
+			var aliases = require('./aliases.js').BattleAliases;
+		} catch (e) {
+			return this.say(con, room, 'Si è verificato un errore: riprova fra qualche secondo.');
+		}
+		
+		arg = arg.toLowerCase().replace(/[^a-z0-9,+-]/g, '').split(',');
+		if (!arg[1]) return this.say(con, room, 'Scrivi il Pokémon e la stat da calcolare (ad esempio .stat pikachu, speed)');
+		arg[0] = arg[0].replace(/[+-]/g,"");
+		arg[1] = arg[1].replace(/[+-]/g,"");
+		if (aliases[arg[0]] && pokedex[toId(aliases[arg[0]])]) arg[0] = toId(aliases[arg[0]]);
+		if (aliases[arg[1]] && pokedex[toId(aliases[arg[1]])]) arg[1] = toId(aliases[arg[1]]);
+		
+		if (pokedex[arg[1]]) {
+			var pokemonarg = 1;
+			var statarg = 0;
+		}
+		else if (pokedex[arg[0]]) {
+			var pokemonarg = 0;
+			var statarg = 1;
+		}
+		else return this.say(con, room, 'Pokémon non trovato');
+		
+		if (arg[statarg] == 'attack') arg[statarg] = 'atk';
+		else if (arg[statarg] == 'defense') arg[statarg] = 'def';
+		else if (arg[statarg] == 'specialattack') arg[statarg] = 'spa';
+		else if (arg[statarg] == 'specialdefense') arg[statarg] = 'spd';
+		else if (arg[statarg] == 'speed') arg[statarg] = 'spe';
+		
+		if (pokedex[arg[pokemonarg]].baseStats[arg[statarg]]) base = pokedex[arg[pokemonarg]].baseStats[arg[statarg]];
+		else return this.say(con, room, 'Statistica non trovata: scegli tra attack, defense, special attack, special defense e speed; o le rispettive abbreviazioni');
+		
+		var calculator = require('./calc.js');
+		argSend = arg.slice(2);
+		argSend = argSend;
+		if (arg[statarg] != 'hp') {
+			var results = calculator.calcfunc(argSend, arg[pokemonarg], arg[statarg], 'stat', con, room, this);
 			
-		*/
-		default:
-			return this.say(con, room, text + 'Unknown option. General links can be found here: http://pstradingroom.weebly.com/links.html');
+			if (results[0] == 'err') return this.say(con, room, results[1]);
+			
+			var ev = results[0];
+			var iv = results[1];
+			var itemBoost = results[2];
+			var boost = results[3];
+			var nature = results[4];
+			var abilityBoost = results[5];
+			var level = Number(results[6]);
+			var item = results[7];
+			var ability = results[8]
+			var statBoost = results[9];
+			var sandBoost = results[10];
+			
+			if (ev == -1) ev = 252;
+			if (iv == -1) iv = 31;
+			if (itemBoost == 0) itemBoost = 1;
+			if (nature == 0) nature = 1;
+			if (abilityBoost == 0) abilityBoost = 1;
+			if (sandBoost == 0) sandBoost = 1;
+			if (level == 0) level = 100;
+			
+			//var stat = Math.floor(Math.floor((((iv + 2*base + ev/4) * level/100) + 5) * nature) * boost * itemBoost * abilityBoost * sandBoost);
+			
+			var stat = Math.floor(Math.floor(Math.floor(2*base + iv + Math.floor(ev/4)) * level/100 + 5) * nature);
+			
+			var boostTable = [1, 1.5, 2, 2.5, 3, 3.5, 4];
+			if (boost >= 0) stat = Math.floor(stat * boostTable[boost]);
+			else stat = Math.floor(stat / boostTable[-boost]);
+			
+			function chainModify(mod, nextMod) {
+				var prevMod = Math.floor(mod * 4096);
+				
+				var numerator = 1;
+				var denominator = 1;
+				if (nextMod.lenght) {
+					numerator = nextMod[0];
+					denominator = nextMod[1];
+				}
+				else {
+					numerator = nextMod;
+				}
+				nextMod = Math.floor(numerator * 4096 / denominator);
+				
+				return ((prevMod * nextMod + 2048) >> 12) / 4096;
+			}
+			
+			var modifier = 1;
+			if (itemBoost != 1) modifier = chainModify(modifier, itemBoost);
+			if (abilityBoost != 1) modifier = chainModify(modifier, abilityBoost);
+			if (sandBoost != 1) modifier = chainModify(modifier, sandBoost);
+			
+			stat = Math.floor((stat * Math.floor(modifier * 4096) + 2048 - 1) / 4096);
+			
+			if (stat == 0) stat = 1;
 		}
-	},
-	mono: 'monotype',
-	monotype: function(arg, by, room, con) {
-		// links and info for the monotype room
-		if (config.serverid !== 'showdown') return false;
-		var text = '';
-		if (room === 'monotype') {
-			if (!this.canUse('monotype', room, by)) text += '/pm ' + by + ', ';
-		} else if (room.charAt(0) !== ',') {
-			return false;
+		else {
+			var results = calculator.calcfunc(argSend, arg[statarg], 'stathp', con, room, this);
+			
+			if (results[0] == 'err') return this.say(con, room, results[1]);
+			
+			var ev = results[0];
+			var iv = results[1];
+			var level = Number(results[6]);
+			
+			if (ev == -1) ev = 252;
+			if (iv == -1) iv = 31;
+			if (level == 0) level = 100;
+			
+			var stat = Math.floor(Math.floor(2*base + iv + Math.floor(ev/4) + 100) * level/100 + 10);
+			if (stat == 0) stat = 1;
 		}
-		var messages = {
-			forums: 'The monotype room\'s forums can be found here: http://psmonotypeforum.createaforum.com/index.php',
-			plug: 'The monotype room\'s plug can be found here: http://plug.dj/monotype-3-am-club/',
-			rules: 'The monotype room\'s rules can be found here: http://psmonotype.wix.com/psmono#!rules/cnnz',
-			site: 'The monotype room\'s site can be found here: http://www.psmonotype.wix.com/psmono',
-			league: 'Information on the Monotype League can be found here: http://themonotypeleague.weebly.com/'
-		};
-		text += messages[toId(arg)] || 'Unknown option. General information can be found here: http://www.psmonotype.wix.com/psmono';
+		
+		if (pokedex[arg[pokemonarg]].species) text += pokedex[arg[pokemonarg]].species + ' ';
+		else return this.say(con, room, 'Questo errore non si dovrebbe verificare... (errore nome)');
+		
+		if (statBoost != '' && statBoost != undefined) text += 'a ' + statBoost + ', ';
+		
+		text += 'con ';
+		
+		text += ev + 'ev e ';
+		
+		text += iv + 'iv, ';
+		
+		if (arg[statarg] == 'hp') text += ' ';
+		else if (nature == 0.9) text += 'con la natura sfavorevole, ';
+		else if (nature == 1.1) text += 'con la natura favorevole, ';
+		else if (nature == 1) text += ' ';
+		else return this.say(con, room, 'Questo errore non si dovrebbe verificare... (errore nature)');
+		
+		
+		if (item != '' && statBoost != undefined) text += item + ', ';
+		
+		if (ability != '' && statBoost != undefined) text += ability + ', ';
+		
+		if (sandBoost == 1.5) text += 'sotto sand, ';
+		
+		if (level != 100) text += 'al livello ' + level + ' ';
+		
+		text += ' ha ';
+		
+		if      (arg[statarg] == 'hp') text += 'gli HP';
+		else if (arg[statarg] == 'atk') text += 'l\'Attacco';
+		else if (arg[statarg] == 'def') text += 'la Difesa';
+		else if (arg[statarg] == 'spa') text += 'l\'Attacco Speciale';
+		else if (arg[statarg] == 'spd') text += 'la Difesa Speciale';
+		else if (arg[statarg] == 'spe') text += 'la Velocità';
+		else return this.say(con, room, 'Questo errore non si dovrebbe verificare... (errore statistiche)');
+		
+		text += ' pari a ' + stat;
+		
 		this.say(con, room, text);
 	},
-	survivor: function(arg, by, room, con) {
-		// contains links and info for survivor in the Survivor room
-		if (config.serverid !== 'showdown') return false;
-		var text = '';
-		if (room === 'survivor') {
-			if (!this.canUse('survivor', room, by)) text += '/pm ' + by + ', ';
-		} else if (room.charAt(0) !== ',') {
-			return false;
+	
+	smogon: function(arg, by, room, con) {
+		if (this.canUse('broadcast', room, by) && (Date.now() - lastBroadcast) < (2 * 1000)) return this.say(con, room, "/pm " + by + ", Per evitare di essere mutata da boTTT ho annullato questo comando, riprova fra 2 secondi");
+		if (this.canUse('broadcast', room, by) || room.charAt(0) === ',') {
+			var text = '';
 		}
-		var gameTypes = {
-			hg: "The rules for this game type can be found here: http://survivor-ps.weebly.com/hunger-games.html",
-			hungergames: "The rules for this game type can be found here: http://survivor-ps.weebly.com/hunger-games.html",
-			classic: "The rules for this game type can be found here: http://survivor-ps.weebly.com/classic.html"
-		};
+		else {
+			return this.say(con, room, '/pm ' + by + ', Scrivimi il comando in PM.');
+		}
 		arg = toId(arg);
-		if (!arg) return this.say(con, room, text + "The list of game types can be found here: http://survivor-ps.weebly.com/themes.html");
-		text += gameTypes[arg] || "Invalid game type. The game types can be found here: http://survivor-ps.weebly.com/themes.html";
-		this.say(con, room, text);
-	},
-	games: function(arg, by, room, con) {
-		// lists the games for the games room
-		if (config.serverid !== 'showdown') return false;
-		var text = '';
-		if (room === 'gamecorner') {
-			if (!this.canUse('games', room, by)) text += '/pm ' + by + ', ';
-		} else if (room.charAt(0) !== ',') {
-			return false;
+		switch (arg) {
+			case "":
+			case "forum":
+			case "forums":
+				text += "http://www.smogon.com/forums/";
+				break;
+			case "competitivediscussion":
+				text += "http://www.smogon.com/forums/forums/249/";
+				break;
+			case "overused":
+			case "ou":
+				text += "http://www.smogon.com/forums/forums/281/";
+				break;
+			case "ubers":
+			case "uber":
+				text += "http://www.smogon.com/forums/forums/259/";
+				break;
+			case "underused":
+			case "uu":
+				text += "http://www.smogon.com/forums/forums/288/";
+				break;
+			case "rarelyused":
+			case "ru":
+				text += "http://www.smogon.com/forums/forums/302/";
+				break;
+			case "neverused":
+			case "nu":
+				text += "http://www.smogon.com/forums/forums/305/";
+				break;
+			case "pu":
+				text += "www.smogon.com/forums/forums/327/";
+				break;
+			case "littlecup":
+			case "lc":
+				text += "http://www.smogon.com/forums/forums/260/";
+				break;
+			case "doubles":
+			case "smogondoubles":
+				text += "http://www.smogon.com/forums/forums/262/";
+				break;
+			case "othermetagames":
+			case "om":
+				text += "http://www.smogon.com/forums/forums/206/";
+				break;
+			case "battlespot":
+				text += "http://www.smogon.com/forums/forums/265/";
+				break;
+			case "vgc":
+				text += "http://www.smogon.com/forums/forums/127/";
+				break;
+			case "ruinsofalph":
+				text += "http://www.smogon.com/forums/forums/31/";
+				break;
+			case "thepolicyreview":
+			case "policyreview":
+				text += "http://www.smogon.com/forums/forums/63/";
+				break;
+			
+			case "tournaments":
+			case "tournament":
+			case "tours":
+			case "tour":
+				text += "http://www.smogon.com/forums/forums/34/";
+				break;
+			case "smogontour":
+			case "st":
+				text += "http://www.smogon.com/forums/forums/49/";
+				break;
+			case "smogonpremierleague":
+			case "premierleague":
+			case "spl":
+				text += "http://www.smogon.com/forums/forums/130/";
+				break;
+			case "worldcupofpokemon":
+			case "wcop":
+				text += "http://www.smogon.com/forums/forums/234/";
+				break;
+			case "smogongrandslam":
+			case "grandslam":
+				text += "http://www.smogon.com/forums/forums/208/";
+				break;
+			case "thecompetitor":
+			case "competitor":
+				text += "http://www.smogon.com/forums/forums/297/";
+				break;
+			case "tournamentapplications":
+				text += "http://www.smogon.com/forums/forums/214/";
+				break;
+			case "localtournaments":
+				text += "http://www.smogon.com/forums/forums/318/";
+				break;
+			case "wifitournaments":
+				text += "http://www.smogon.com/forums/forums/100/";
+				break;
+			
+			case "smogonstartershangout":
+			case "startershangout":
+				text += "http://www.smogon.com/forums/forums/264/";
+				break;
+			case "comunityfeedback":
+			case "feedback":
+				text += "http://www.smogon.com/forums/forums/323/";
+				break;
+			case "battling101":
+				text += "http://www.smogon.com/forums/forums/42/";
+				break;
+			case "tuteetalk":
+				text += "http://www.smogon.com/forums/forums/223/";
+				break;
+			case "ratemyteam":
+			case "rmt":
+				text += "http://www.smogon.com/forums/forums/52/";
+				break;
+			case "orasouteams":
+				text += "http://www.smogon.com/forums/forums/261/";
+				break;
+			case "orasotherteams":
+				text += "http://www.smogon.com/forums/forums/292/";
+				break;
+			case "pastgenteams":
+				text += "http://www.smogon.com/forums/forums/319/";
+				break;
+			case "teamshowcase":
+				text += "http://www.smogon.com/forums/forums/314/";
+				break;
+			case "ratingactivities":
+				text += "http://www.smogon.com/forums/forums/92/";
+				break;
+			case "rmtarchive":
+				text += "http://www.smogon.com/forums/forums/84/";
+				break;
+			case "pokemonshowdown":
+			case "ps":
+				text += "http://www.smogon.com/forums/forums/209/";
+				break;
+			case "disciplineappeals":
+				text += "http://www.smogon.com/forums/forums/295/";
+				break;
+			case "news":
+			case "pokemonshowdownnews":
+			case "psnews":
+				text += "http://www.smogon.com/forums/forums/270/";
+				break;
+			case "theplayer":
+				text += "http://www.smogon.com/forums/forums/307/";
+				break;
+			case "wifi":
+				text += "http://www.smogon.com/forums/forums/53/";
+				break;
+			case "battlerequests":
+			case "wifibattlerequests":
+				text += "http://www.smogon.com/forums/forums/290/";
+				break;
+			case "wifitournaments":
+			case "wifitournament":
+			case "wifitours":
+			case "wifitour":
+				text += "http://www.smogon.com/forums/forums/81/";
+				break;
+			case "giveaways":
+				text += "http://www.smogon.com/forums/forums/316/";
+				break;
+			case "orangeisland":
+				text += "http://www.smogon.com/forums/forums/205/";
+				break;
+			case "oras":
+			case "orangeislandoras":
+				text += "http://www.smogon.com/forums/forums/320/";
+				break;
+			
+			case "preliminarypokedex":
+				text += "http://www.smogon.com/forums/forums/304/";
+				break;
+			case "sixthgenerationcontributions":
+				text += "http://www.smogon.com/forums/forums/253/";
+				break;
+			case "ubersanalyses":
+				text += "http://www.smogon.com/forums/forums/254/";
+				break;
+			case "ouanalyses":
+				text += "http://www.smogon.com/forums/forums/255/";
+				break;
+			case "uuanalyses":
+				text += "http://www.smogon.com/forums/forums/303/";
+				break;
+			case "ruanalyses":
+				text += "http://www.smogon.com/forums/forums/306/";
+				break;
+			case "nuanalyses":
+				text += "http://www.smogon.com/forums/forums/315/";
+				break;
+			case "lcanalyses":
+				text += "http://www.smogon.com/forums/forums/256/";
+				break;
+			case "doubleanalyses":
+				text += "http://www.smogon.com/forums/forums/257/";
+				break;
+			case "vgc2015analyses":
+			case "vgcanalyses":
+				text += "http://www.smogon.com/forums/forums/162/";
+				break;
+			case "othermetagamesanalyses":
+			case "omanalyses":
+				text += "http://www.smogon.com/forums/forums/310/";
+				break;
+			case "articlesandletters":
+				text += "http://www.smogon.com/forums/forums/258/";
+				break;
+			case "pastgenerationcontributions":
+				text += "http://www.smogon.com/forums/forums/148/";
+				break;
+			case "bwubersanalyses":
+				text += "http://www.smogon.com/forums/forums/149/";
+				break;
+			case "bwouanalyses":
+				text += "http://www.smogon.com/forums/forums/156/";
+				break;
+			case "bwuuanalyses":
+				text += "http://www.smogon.com/forums/forums/172/";
+				break;
+			case "bwruanalyses":
+				text += "http://www.smogon.com/forums/forums/181/";
+				break;
+			case "bwnuanalyses":
+				text += "http://www.smogon.com/forums/forums/186/";
+				break;
+			case "bwlcanalyses":
+				text += "http://www.smogon.com/forums/forums/150/";
+				break;
+			case "bwdoublesanalyses":
+				text += "http://www.smogon.com/forums/forums/243/";
+				break;
+			case "dppanalyses":
+				text += "http://www.smogon.com/forums/forums/136/";
+				break;
+			case "pastvgcanalyses":
+				text += "http://www.smogon.com/forums/forums/179/";
+				break;
+			case "rbygscadv":
+			case "rby":
+			case "gsc":
+			case "adv":
+			case "rse":
+				text += "http://www.smogon.com/forums/forums/147/";
+				break;
+			case "pastgenerationarticlesandletters":
+				text += "http://www.smogon.com/forums/forums/106/";
+				break;
+			case "techicalprojects":
+				text += "http://www.smogon.com/forums/forums/107/";
+				break;
+			case "archives":
+				text += "http://www.smogon.com/forums/forums/125/";
+				break;
+			case "uploadedanalyses":
+				text += "http://www.smogon.com/forums/forums/75/";
+				break;
+			case "lockedoutdatedanalyses":
+			case "lockedanalyses":
+			case "outdatedanalyses":
+				text += "http://www.smogon.com/forums/forums/124/";
+				break;
+			case "xypreviews":
+				text += "http://www.smogon.com/forums/forums/285/";
+				break;
+			
+			case "thesmog":
+				text += "http://www.smogon.com/forums/forums/79/";
+				break;
+			case "thesmogarticleapprovals":
+				text += "http://www.smogon.com/forums/forums/216/";
+				break;
+			case "thesmogartistapprovals":
+				text += "http://www.smogon.com/forums/forums/299/";
+				break;
+			case "socialmedia":
+				text += "http://www.smogon.com/forums/forums/275/";
+				break;
+			case "smogonirc":
+			case "irc":
+				text += "http://www.smogon.com/forums/forums/226/";
+				break;
+			case "ircdisciplineappeals":
+				text += "http://www.smogon.com/forums/forums/228/";
+				break;
+			case "createapokemonproject":
+			case "createapokmonproject":
+			case "capproject":
+			case "cap":
+				text += "http://www.smogon.com/forums/forums/66/";
+				break;
+			case "cappreevolutionworkshop":
+			case "cappreevolution":
+				text += "http://www.smogon.com/forums/forums/198/";
+				break;
+			case "cappolicyreview":
+				text += "http://www.smogon.com/forums/forums/199/";
+				break;
+			case "capprocessarchive":
+			case "caparchive":
+				text += "http://www.smogon.com/forums/forums/201/";
+				break;
+			case "capmetagame":
+				text += "http://www.smogon.com/forums/forums/311/";
+				break;
+			
+			case "congrecationofthemasses":
+				text += "http://www.smogon.com/forums/forums/163/";
+				break;
+			case "sportsarena":
+				text += "http://www.smogon.com/forums/forums/94/";
+				break;
+			case "thegreatlibrary":
+				text += "http://www.smogon.com/forums/forums/235/";
+				break;
+			case "firebotdevelopmentlab":
+			case "firebot":
+				text += "http://www.smogon.com/forums/forums/38/";
+				break;
+			case "cirusmaximus":
+				text += "http://www.smogon.com/forums/forums/78/";
+				break;
+			case "officeofstrategicinfluence":
+				text += "http://www.smogon.com/forums/forums/123/";
+				break;
+			case "gameproposal":
+				text += "http://www.smogon.com/forums/forums/246/";
+				break;
+			case "animestylebattling":
+				text += "http://www.smogon.com/forums/forums/177/";
+				break;
+			case "smearglesstudio":
+			case "smearglestudio":
+				text += "http://www.smogon.com/forums/forums/50/";
+				break;
+			case "smearglesstudioartistapprovals":
+			case "smearglestudioartistapprovals":
+				text += "http://www.smogon.com/forums/forums/298/";
+				break;
+			case "threadcryonics":
+				text += "http://www.smogon.com/forums/forums/283/";
+				break;
+			case "smogonsgreatesthits":
+			case "smogongreatesthits":
+				text += "http://www.smogon.com/forums/forums/58/";
+				break;
+			case "trouducul":
+				text += "http://www.smogon.com/forums/forums/46/";
+				break;
+			case "closedforums":
+				text += "http://www.smogon.com/forums/forums/183/";
+				break;
+			default:
+				text += "Subforum non trovato";
 		}
-		this.say(con, room, text + 'Game List: 1. Would You Rather, 2. NickGames, 3. Scattegories, 4. Commonyms, 5. Questionnaires, 6. Funarios, 7. Anagrams, 8. Spot the Reference, 9. Pokemath, 10. Liar\'s Dice');
-		this.say(con, room, text + '11. Pun Game, 12. Dice Cup, 13. Who\'s That Pokemon?, 14. Pokemon V Pokemon (BST GAME), 15. Letter Getter, 16. Missing Link, 17. Parameters! More information can be found here: http://psgamecorner.weebly.com/games.html');
+		return this.say(con, room, text);
 	},
-	happy: function(arg, by, room, con) {
-		// info for The Happy Place
-		if (config.serverid !== 'showdown') return false;
-		var text = '';
-		if (room === 'thehappyplace') {
-			if (!this.canUse('happy', room, by)) text += '/pm ' + by + ', ';
-		} else if (room.charAt(0) !== ',') {
-			return false;
+	
+	calc: function(arg, by, room, con) {
+		if (this.canUse('broadcast', room, by) && (Date.now() - lastBroadcast) < (2 * 1000)) return this.say(con, room, "/pm " + by + ", Per evitare di essere mutata da boTTT ho annullato questo comando, riprova fra 2 secondi");
+		if (this.canUse('broadcast', room, by) || room.charAt(0) === ',') {
+			return this.say(con, room, "https://gamut-was-taken.github.io/");
 		}
-		arg = toId(arg);
-		if (arg === 'askstaff' || arg === 'ask' || arg === 'askannie') {
-			text += "http://thepshappyplace.weebly.com/ask-the-staff.html";
-		} else {
-			text += "The Happy Place, at its core, is a friendly environment for anyone just looking for a place to hang out and relax. We also specialize in taking time to give advice on life problems for users. Need a place to feel at home and unwind? Look no further!";
+	},
+	
+	stats: function(arg, by, room, con) {
+		if (this.canUse('broadcast', room, by) && (Date.now() - lastBroadcast) < (2 * 1000)) return this.say(con, room, "/pm " + by + ", Per evitare di essere mutata da boTTT ho annullato questo comando, riprova fra 2 secondi");
+		if (this.canUse('broadcast', room, by) || room.charAt(0) === ',') {
+			return this.say(con, room, "http://www.smogon.com/stats/2015-02/");
 		}
-		this.say(con, room, text);
 	},
-
-
-	/**
-	 * Jeopardy commands
-	 *
-	 * The following commands are used for Jeopardy in the Academics room
-	 * on the Smogon server.
-	 */
-
-
-	b: 'buzz',
-	buzz: function(arg, by, room, con) {
-		if (this.buzzed || !this.canUse('buzz', room, by) || room.charAt(0) === ',') return false;
-		this.say(con, room, '**' + by.substr(1) + ' has buzzed in!**');
-		this.buzzed = by;
-		this.buzzer = setTimeout(function(con, room, buzzMessage) {
-			this.say(con, room, buzzMessage);
-			this.buzzed = '';
-		}.bind(this), 7 * 1000, con, room, by + ', your time to answer is up!');
+	
+	seasonal: function(arg, by, room, con) {
+		if (this.canUse('broadcast', room, by) && (Date.now() - lastBroadcast) < (2 * 1000)) return this.say(con, room, "/pm " + by + ", Per evitare di essere mutata da boTTT ho annullato questo comando, riprova fra 2 secondi");
+		if (this.canUse('broadcast', room, by) || room.charAt(0) === ',') {
+			return this.say(con, room, "http://pastebin.com/raw.php?i=7h0LyrTt");
+		}
 	},
-	reset: function(arg, by, room, con) {
-		if (!this.buzzed || !this.hasRank(by, '%@&#~') || room.charAt(0) === ',') return false;
-		clearTimeout(this.buzzer);
-		this.buzzed = '';
-		this.say(con, room, 'The buzzer has been reset.');
+	
+	guida: function(arg, by, room, con) {
+		if (this.canUse('broadcast', room, by) && (Date.now() - lastBroadcast) < (2 * 1000)) return this.say(con, room, "/pm " + by + ", Per evitare di essere mutata da boTTT ho annullato questo comando, riprova fra 2 secondi");
+		if (this.canUse('broadcast', room, by) || room.charAt(0) === ',') {
+			return this.say(con, room, "Comandi -> http://pastebin.com/Mt1bwNq4");
+		}
+	},
+	
+	duck: function(arg, by, room, con) {
+		if (this.canUse('broadcast', room, by) && (Date.now() - lastBroadcast) < (2 * 1000)) return this.say(con, room, "/pm " + by + ", Per evitare di essere mutata da boTTT ho annullato questo comando, riprova fra 2 secondi");
+		if (this.canUse('broadcast', room, by) || room.charAt(0) === ',') {
+			return this.say(con, room, "quack");
+		}
+	},
+	
+	acher: function(arg, by, room, con) {
+		if (this.canUse('broadcast', room, by) && (Date.now() - lastBroadcast) < (2 * 1000)) return this.say(con, room, "/pm " + by + ", Per evitare di essere mutata da boTTT ho annullato questo comando, riprova fra 2 secondi");
+		if (this.canUse('broadcast', room, by) || room.charAt(0) === ',') {
+			return this.say(con, room, "lo acher che bontà ♫");
+		}
 	},
 };
