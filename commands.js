@@ -162,7 +162,7 @@ exports.commands = {
 		}
 		this.say(con, tarRoom || room, arg);
 	},
-	/*js: function(arg, by, room, con) {
+	js: function(arg, by, room, con) {
  		if (config.excepts.indexOf(toId(by)) === -1) return false;
  		try {
  			var result = eval(arg.trim());
@@ -171,7 +171,6 @@ exports.commands = {
  			this.say(con, room, e.name + ": " + e.message);
  		}
  	},
-	*/
 	
 	/**
 	 * Room Owner commands
