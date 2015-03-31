@@ -477,7 +477,7 @@ exports.commands = {
 			}
 		}
 		else if (arg == "") {
-			tiers = ["Random Battle", "OU", "Ubers", "UU", "RU", "NU", "LC", "Anything Goes", "Random Doubles Battle", "Smogon Doubles", "Random Triples Battle", "Seasonal", "Challenge Cup", "Challenge Cup 1-vs-1", "1v1", "Monotype", "PU", "[Gen 5] OU", "[Gen 1] Random Battle"];
+			tiers = ["Random Battle", "OU", "Ubers", "UU", "RU", "NU", "LC", "Anything Goes", "Random Doubles Battle", "Smogon Doubles", "Random Triples Battle", "Seasonal", "Challenge Cup", "Challenge Cup 1-vs-1", "1v1", "Monotype", "PU", "[Gen 5] OU", "[Gen 2] Random Battle", "[Gen 1] Random Battle", "[Gen 1] Challenge Cup"];
 		}
 		else {
 			return this.say(con, room, "errore");
