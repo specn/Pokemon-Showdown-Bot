@@ -1821,6 +1821,14 @@ exports.commands = {
 		}
 	},
 	
+	renames: 'showrenames',
+	showrenames: function(arg, by, room, con) {
+		if (this.canUse('broadcast', room, by) && (Date.now() - lastBroadcast) < (2 * 1000)) return this.say(con, room, "/pm " + by + ", Per evitare di essere mutata da boTTT ho annullato questo comando, riprova fra 2 secondi");
+		if (this.canUse('broadcast', room, by) || room.charAt(0) === ',') {
+			return this.say(con, room, "Guida per installare lo script -> http://goo.gl/Z6RSAl");
+		}
+	},
+	
 	guida: function(arg, by, room, con) {
 		if (this.canUse('broadcast', room, by) && (Date.now() - lastBroadcast) < (2 * 1000)) return this.say(con, room, "/pm " + by + ", Per evitare di essere mutata da boTTT ho annullato questo comando, riprova fra 2 secondi");
 		if (this.canUse('broadcast', room, by) || room.charAt(0) === ',') {
