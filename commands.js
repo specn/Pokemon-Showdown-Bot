@@ -1696,4 +1696,9 @@ exports.commands = {
 			return this.say(con, room, "lo acher che bontà ♫");
 		}
 	},
+	
+	spagueti: function(arg, by, room, con) {
+		if (room.charAt(0) !== ',') return false;
+		return this.say(con, room, "http://spagueti.psim.us/");
+	},
 };
