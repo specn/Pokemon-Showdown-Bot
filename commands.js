@@ -767,51 +767,9 @@ exports.commands = {
 			var text = '';
 		}
 		else {
-			return this.say(con, room, '/pm ' + by + ', Scrivimi il comando in PM.');
+			var text = '/pm ' + by + ', ';
 		}
-		try {
-			var pokedex = require('./pokedex.js').BattlePokedex;
-			var movedex = require('./moves.js').BattleMovedex;
-			var learnsets = require('./learnsets-g6.js').BattleLearnsets;
-			var aliases = require('./aliases.js').BattleAliases;
-		} catch (e) {
-			return this.say(con, room, 'Si è verificato un errore: riprova fra qualche secondo.');
-		}
-		var arg = toId(arg);
-		if (aliases[arg]) arg = toId(aliases[arg]);
-
-		if (pokedex[arg]) {
-			var prioritymoves = [];
-			var pokemonToCheck = [arg];
-			var i = true;
-			while (i) {
-				if (pokedex[pokemonToCheck[pokemonToCheck.length-1]].prevo) pokemonToCheck.push(pokedex[pokemonToCheck[pokemonToCheck.length-1]].prevo.toLowerCase());
-				else i = false;
-			}
-			for (var j in pokemonToCheck) {
-				if (learnsets[pokemonToCheck[j]]) {
-					for (var k in learnsets[pokemonToCheck[j]].learnset) {
-						if (movedex[k]) {
-							if (movedex[k].priority > 0 && movedex[k].basePower > 0) {
-								if (prioritymoves.indexOf(movedex[k].name) == -1) {
-									prioritymoves.push(movedex[k].name);
-								}
-							}
-						}
-					}
-				}
-			}
-			prioritymoves.sort();
-			for (var l in prioritymoves) {
-				text += prioritymoves[l];
-				if (l != prioritymoves.length-1) text += ', ';
-			}
-		}
-		else {
-			text += "Non trovato";
-		}
-		if (text == '') text = 'Nessuna priority move trovata';
-		this.say(con, room, text);
+		return this.say(con, room, text + '.priority è stato rimosso; ora puoi usare /movesearch __pokemon__, priority+');
 	},
 	boosting: function(arg, by, room, con) {
 		if (this.canUse('broadcast', room, by) && (Date.now() - lastBroadcast) < (2 * 1000)) return this.say(con, room, "/pm " + by + ", Per evitare di essere mutata da boTTT ho annullato questo comando, riprova fra 2 secondi");
@@ -871,66 +829,9 @@ exports.commands = {
 			var text = '';
 		}
 		else {
-			return this.say(con, room, '/pm ' + by + ', Scrivimi il comando in PM.');
+			var text = '/pm ' + by + ', ';
 		}
-		try {
-			var pokedex = require('./pokedex.js').BattlePokedex;
-			var movedex = require('./moves.js').BattleMovedex;
-			var learnsets = require('./learnsets-g6.js').BattleLearnsets;
-			var aliases = require('./aliases.js').BattleAliases;
-		} catch (e) {
-			return this.say(con, room, 'Si è verificato un errore: riprova fra qualche secondo.');
-		}
-		var arg = toId(arg);
-		if (aliases[arg]) arg = toId(aliases[arg]);
-
-		if (pokedex[arg]) {
-			var recoverymoves = [];
-			var drainmoves = [];
-			var pokemonToCheck = [arg];
-			var i = true;
-			while (i) {
-				if (pokedex[pokemonToCheck[pokemonToCheck.length-1]].prevo) pokemonToCheck.push(pokedex[pokemonToCheck[pokemonToCheck.length-1]].prevo);
-				else i = false;
-			}
-			for (var j in pokemonToCheck) {
-				if (learnsets[pokemonToCheck[j]]) {
-					for (var k in learnsets[pokemonToCheck[j]].learnset) {
-						if (movedex[k]) {
-							if (movedex[k].heal || k == "synthesis" || k == "moonlight" || k == "morningsun" || k == "wish" || k == "swallow") {
-								if (recoverymoves.indexOf(movedex[k].name) == -1) {
-									recoverymoves.push(movedex[k].name);
-								}
-							}
-							else if (movedex[k].drain) {
-								if (drainmoves.indexOf(movedex[k].name) == -1) {
-									drainmoves.push(movedex[k].name);
-								}
-							}
-						}
-					}
-				}
-			}
-			recoverymoves.sort();
-			for (var l in recoverymoves) {
-				text += recoverymoves[l];
-				if (l != recoverymoves.length-1 || drainmoves.length > 0) text += ', ';
-			}
-			if (drainmoves.length > 0) {
-				drainmoves.sort();
-				text += '__';
-				for (var k in drainmoves) {
-					text += drainmoves[k];
-					if (k != drainmoves.length-1) text += ', ';
-				}
-				text += '__';
-			}
-		}
-		else {
-			text += "Non trovato";
-		}
-		if (text == '') text = 'Nessuna recovery move trovata';
-		this.say(con, room, text);
+		return this.say(con, room, text + '.recovery è stato rimosso; ora puoi usare /movesearch __pokemon__, recovery');
 	},
 	mexican: 'status',
 	status: function(arg, by, room, con) {
@@ -1044,68 +945,9 @@ exports.commands = {
 			var text = '';
 		}
 		else {
-			return this.say(con, room, '/pm ' + by + ', Scrivimi il comando in PM.');
+			var text = '/pm ' + by + ', ';
 		}
-		try {
-			var pokedex = require('./pokedex.js').BattlePokedex;
-			var aliases = require('./aliases.js').BattleAliases;
-			var movedex = require('./moves.js').BattleMovedex;
-			var learnsets = require('./learnsets-g6.js').BattleLearnsets;
-		} catch (e) {
-			return this.say(con, room, 'Si è verificato un errore: riprova fra qualche secondo.');
-		}
-		
-		arg = arg.toLowerCase().replace(/[^a-z0-9,]/g, '').split(',');
-		if (!arg[1]) return this.say(con, room, 'Scrivi il Pokémon e il tipo');
-		arg[0] = arg[0].replace(/[+-]/g,"");
-		arg[1] = arg[1].replace(/[+-]/g,"");
-		if (aliases[arg[0]]) arg[0] = toId(aliases[arg[0]]);
-		if (aliases[arg[1]]) arg[1] = toId(aliases[arg[1]]);
-		
-		if (pokedex[arg[1]]) {
-			var pokemonarg = 1;
-			var typearg = 0;
-		}
-		else if (pokedex[arg[0]]) {
-			var pokemonarg = 0;
-			var typearg = 1;
-		}
-		else return this.say(con, room, 'Pokémon non trovato');
-		var types = ['bug', 'dark', 'dragon', 'electric', 'fairy', 'fighting', 'fire', 'flying', 'ghost', 'grass', 'ground', 'ice', 'normal', 'poison', 'psychic', 'rock', 'steel', 'water'];
-		if (types.indexOf(arg[typearg]) == -1) return this.say(con, room, 'Tipo non trovato');
-		if (pokedex[arg[pokemonarg]]) {
-			var typemoves = [];
-			var pokemonToCheck = [arg[pokemonarg]];
-			var i = true;
-			while (i) {
-				if (pokedex[pokemonToCheck[pokemonToCheck.length-1]].prevo) pokemonToCheck.push(pokedex[pokemonToCheck[pokemonToCheck.length-1]].prevo);
-				else i = false;
-			}
-			var exceptsmoves = ['beatup', 'crushgrip', 'electroball', 'flail', 'frustration', 'grassknot', 'gyroball', 'heatcrash', 'heavyslam', 'lowkick', 'naturalgift', 'punishment', 'return', 'reversal', 'spitup', 'trumpcard', 'wringout'];
-			for (var j in pokemonToCheck) {
-				if (learnsets[pokemonToCheck[j]]) {
-					for (var k in learnsets[pokemonToCheck[j]].learnset) {
-						if (movedex[k]) {
-							if (movedex[k].type.toLowerCase() == arg[typearg] && (movedex[k].basePower > 0 || exceptsmoves.indexOf(k) > -1)) {
-								if (typemoves.indexOf(movedex[k].name) == -1) {
-									typemoves.push(movedex[k].name);
-								}
-							}
-						}
-					}
-				}
-			}
-			typemoves.sort();
-			for (var l in typemoves) {
-				text += typemoves[l];
-				if (l != typemoves.length-1) text += ', ';
-			}
-		}
-		else {
-			text += "Non trovato";
-		}
-		if (text == '') text = 'Nessuna ' + arg[typearg] + ' move trovata';
-		this.say(con, room, text);
+		return this.say(con, room, text + '.typelearn è stato rimosso; ora puoi usare /movesearch __pokemon__, __tipo__ (ad esempio /movesearch pikachu, electric type)');
 	},
 	ds: 'dexsearch',
 	dsearch: 'dexsearch',
@@ -1117,7 +959,7 @@ exports.commands = {
 		else {
 			var text = '/pm ' + by + ', ';
 		}
-		this.say(con, room, text + '.dexsearch è stato rimosso, l\'unica funzione che aveva in più rispetto a /dexsearch ora è implementata anche lì (statistica > o < numero)');
+		return this.say(con, room, text + '.dexsearch è stato rimosso, l\'unica funzione che aveva in più rispetto a /dexsearch ora è implementata anche lì (statistica > o < numero)');
 	},
 	stat: function(arg, by, room, con) {
 		if (this.canUse('broadcast', room, by) && (Date.now() - lastBroadcast) < (2 * 1000)) return this.say(con, room, "/pm " + by + ", Per evitare di essere mutata da boTTT ho annullato questo comando, riprova fra 2 secondi");
