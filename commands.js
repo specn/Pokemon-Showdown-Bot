@@ -414,7 +414,6 @@ exports.commands = {
 	randompike: 'randompoke',
 	randompokemon: 'randompoke',
 	randompoke: function(arg, by, room, con) {
-		if (this.canUse('broadcast', room, by) && (Date.now() - lastBroadcast) < (2 * 1000)) return this.say(con, room, "/pm " + by + ", Per evitare di essere mutata da boTTT ho annullato questo comando, riprova fra 2 secondi");
 		if (this.canUse('broadcast', room, by) || room.charAt(0) === ',') {
 			var text = '';
 		} else {
@@ -456,7 +455,6 @@ exports.commands = {
 		this.say(con, room, text);
 	},
 	randomtier: function(arg, by, room, con) {
-		if (this.canUse('broadcast', room, by) && (Date.now() - lastBroadcast) < (2 * 1000)) return this.say(con, room, "/pm " + by + ", Per evitare di essere mutata da boTTT ho annullato questo comando, riprova fra 2 secondi");
 		if (this.canUse('broadcast', room, by) || room.charAt(0) === ',') {
 			var text = '';
 		} else {
@@ -484,7 +482,6 @@ exports.commands = {
 		this.say(con, room, text);
 	},
 	randomtype: function(arg, by, room, con) {
-		if (this.canUse('broadcast', room, by) && (Date.now() - lastBroadcast) < (2 * 1000)) return this.say(con, room, "/pm " + by + ", Per evitare di essere mutata da boTTT ho annullato questo comando, riprova fra 2 secondi");
 		if (this.canUse('broadcast', room, by) || room.charAt(0) === ',') {
 			var text = '';
 		} else {
@@ -495,7 +492,6 @@ exports.commands = {
 		this.say(con, room, text);
 	},
 	/*randomteam: function(arg, by, room, con) {
-		if (this.canUse('broadcast', room, by) && (Date.now() - lastBroadcast) < (2 * 1000)) return this.say(con, room, "/pm " + by + ", Per evitare di essere mutata da boTTT ho annullato questo comando, riprova fra 2 secondi");
 		if (this.canUse('randomteam', room, by) || room.charAt(0) === ',') {
 				var text = '';
 		} else {
@@ -513,7 +509,6 @@ exports.commands = {
 	
 	
     gen: function(arg, by, room, con) {
-		if (this.canUse('broadcast', room, by) && (Date.now() - lastBroadcast) < (2 * 1000)) return this.say(con, room, "/pm " + by + ", Per evitare di essere mutata da boTTT ho annullato questo comando, riprova fra 2 secondi");
 		if (this.canUse('broadcast', room, by) || room.charAt(0) === ',') {
 			var text = '';
 		}
@@ -569,7 +564,6 @@ exports.commands = {
 	
 	viablemoves: 'randommoves',
 	randommoves: function(arg, by, room, con) {
-		if (this.canUse('broadcast', room, by) && (Date.now() - lastBroadcast) < (2 * 1000)) return this.say(con, room, "/pm " + by + ", Per evitare di essere mutata da boTTT ho annullato questo comando, riprova fra 2 secondi");
 		if (this.canUse('broadcast', room, by) || room.charAt(0) === ',') {
 			var text = '';
 		}
@@ -611,7 +605,6 @@ exports.commands = {
 	eventdex: 'event',
 	eventdata: 'event',
 	event: function(arg, by, room, con) {
-		if (this.canUse('broadcast', room, by) && (Date.now() - lastBroadcast) < (2 * 1000)) return this.say(con, room, "/pm " + by + ", Per evitare di essere mutata da boTTT ho annullato questo comando, riprova fra 2 secondi");
 		if (this.canUse('broadcast', room, by) || room.charAt(0) === ',') {
 			var text = '';
 		}
@@ -699,7 +692,6 @@ exports.commands = {
 	},
 	heatcrash: 'heavyslam',
 	heavyslam: function(arg, by, room, con) {
-		if (this.canUse('broadcast', room, by) && (Date.now() - lastBroadcast) < (2 * 1000)) return this.say(con, room, "/pm " + by + ", Per evitare di essere mutata da boTTT ho annullato questo comando, riprova fra 2 secondi");
 		if (this.canUse('broadcast', room, by) || room.charAt(0) === ',') {
 			var text = '';
 		}
@@ -733,7 +725,6 @@ exports.commands = {
 	
 	preevo: 'prevo',
 	prevo: function(arg, by, room, con) {
-		if (this.canUse('broadcast', room, by) && (Date.now() - lastBroadcast) < (2 * 1000)) return this.say(con, room, "/pm " + by + ", Per evitare di essere mutata da boTTT ho annullato questo comando, riprova fra 2 secondi");
 		if (this.canUse('broadcast', room, by) || room.charAt(0) === ',') {
 			var text = '';
 		}
@@ -759,7 +750,6 @@ exports.commands = {
 	},
 	
 	priority: function(arg, by, room, con) {
-		if (this.canUse('broadcast', room, by) && (Date.now() - lastBroadcast) < (2 * 1000)) return this.say(con, room, "/pm " + by + ", Per evitare di essere mutata da boTTT ho annullato questo comando, riprova fra 2 secondi");
 		if (this.canUse('broadcast', room, by) || room.charAt(0) === ',') {
 			var text = '';
 		}
@@ -769,7 +759,6 @@ exports.commands = {
 		return this.say(con, room, text + '.priority è stato rimosso; ora puoi usare /movesearch __pokemon__, priority+');
 	},
 	boosting: function(arg, by, room, con) {
-		if (this.canUse('broadcast', room, by) && (Date.now() - lastBroadcast) < (2 * 1000)) return this.say(con, room, "/pm " + by + ", Per evitare di essere mutata da boTTT ho annullato questo comando, riprova fra 2 secondi");
 		if (this.canUse('broadcast', room, by) || room.charAt(0) === ',') {
 			var text = '';
 		}
@@ -821,7 +810,6 @@ exports.commands = {
 		this.say(con, room, text);
 	},
 	recovery: function(arg, by, room, con) {
-		if (this.canUse('broadcast', room, by) && (Date.now() - lastBroadcast) < (2 * 1000)) return this.say(con, room, "/pm " + by + ", Per evitare di essere mutata da boTTT ho annullato questo comando, riprova fra 2 secondi");
 		if (this.canUse('broadcast', room, by) || room.charAt(0) === ',') {
 			var text = '';
 		}
@@ -832,7 +820,6 @@ exports.commands = {
 	},
 	mexican: 'status',
 	status: function(arg, by, room, con) {
-		if (this.canUse('broadcast', room, by) && (Date.now() - lastBroadcast) < (2 * 1000)) return this.say(con, room, "/pm " + by + ", Per evitare di essere mutata da boTTT ho annullato questo comando, riprova fra 2 secondi");
 		if (this.canUse('broadcast', room, by) || room.charAt(0) === ',') {
 			var text = '';
 		}
@@ -885,7 +872,6 @@ exports.commands = {
 	},
 	hazards: 'hazard',
 	hazard: function(arg, by, room, con) {
-		if (this.canUse('broadcast', room, by) && (Date.now() - lastBroadcast) < (2 * 1000)) return this.say(con, room, "/pm " + by + ", Per evitare di essere mutata da boTTT ho annullato questo comando, riprova fra 2 secondi");
 		if (this.canUse('broadcast', room, by) || room.charAt(0) === ',') {
 			var text = '';
 		}
@@ -937,7 +923,6 @@ exports.commands = {
 		this.say(con, room, text);
 	},
 	typelearn: function(arg, by, room, con) {
-		if (this.canUse('broadcast', room, by) && (Date.now() - lastBroadcast) < (2 * 1000)) return this.say(con, room, "/pm " + by + ", Per evitare di essere mutata da boTTT ho annullato questo comando, riprova fra 2 secondi");
 		if (this.canUse('broadcast', room, by) || room.charAt(0) === ',') {
 			var text = '';
 		}
@@ -949,7 +934,6 @@ exports.commands = {
 	ds: 'dexsearch',
 	dsearch: 'dexsearch',
 	dexsearch: function(arg, by, room, con) {
-		if (this.canUse('broadcast', room, by) && (Date.now() - lastBroadcast) < (2 * 1000)) return this.say(con, room, "/pm " + by + ", Per evitare di essere mutata da boTTT ho annullato questo comando, riprova fra 2 secondi");
 		if (this.canUse('broadcast', room, by) || room.charAt(0) === ',') {
 			var text = '';
 		}
@@ -959,7 +943,6 @@ exports.commands = {
 		return this.say(con, room, text + '.dexsearch è stato rimosso, l\'unica funzione che aveva in più rispetto a /dexsearch ora è implementata anche lì (statistica > o < numero)');
 	},
 	stat: function(arg, by, room, con) {
-		if (this.canUse('broadcast', room, by) && (Date.now() - lastBroadcast) < (2 * 1000)) return this.say(con, room, "/pm " + by + ", Per evitare di essere mutata da boTTT ho annullato questo comando, riprova fra 2 secondi");
 		if (this.canUse('broadcast', room, by) || room.charAt(0) === ',') {
 			var text = '';
 		}
@@ -1120,7 +1103,6 @@ exports.commands = {
 	},
 	
 	smogon: function(arg, by, room, con) {
-		if (this.canUse('broadcast', room, by) && (Date.now() - lastBroadcast) < (2 * 1000)) return this.say(con, room, "/pm " + by + ", Per evitare di essere mutata da boTTT ho annullato questo comando, riprova fra 2 secondi");
 		if (this.canUse('broadcast', room, by) || room.charAt(0) === ',') {
 			var text = '';
 		}
@@ -1487,21 +1469,18 @@ exports.commands = {
 	},
 	
 	calc: function(arg, by, room, con) {
-		if (this.canUse('broadcast', room, by) && (Date.now() - lastBroadcast) < (2 * 1000)) return this.say(con, room, "/pm " + by + ", Per evitare di essere mutata da boTTT ho annullato questo comando, riprova fra 2 secondi");
 		if (this.canUse('broadcast', room, by) || room.charAt(0) === ',') {
 			return this.say(con, room, "https://gamut-was-taken.github.io/");
 		}
 	},
 	
 	stats: function(arg, by, room, con) {
-		if (this.canUse('broadcast', room, by) && (Date.now() - lastBroadcast) < (2 * 1000)) return this.say(con, room, "/pm " + by + ", Per evitare di essere mutata da boTTT ho annullato questo comando, riprova fra 2 secondi");
 		if (this.canUse('broadcast', room, by) || room.charAt(0) === ',') {
 			return this.say(con, room, "http://www.smogon.com/stats/2015-04/");
 		}
 	},
 	
 	seasonal: function(arg, by, room, con) {
-		if (this.canUse('broadcast', room, by) && (Date.now() - lastBroadcast) < (2 * 1000)) return this.say(con, room, "/pm " + by + ", Per evitare di essere mutata da boTTT ho annullato questo comando, riprova fra 2 secondi");
 		if (this.canUse('broadcast', room, by) || room.charAt(0) === ',') {
 			return this.say(con, room, "https://parnassius.makes.org/thimble/ODQyNDAwMjU2/ps-seasonal_");
 		}
@@ -1509,28 +1488,24 @@ exports.commands = {
 	
 	renames: 'showrenames',
 	showrenames: function(arg, by, room, con) {
-		if (this.canUse('broadcast', room, by) && (Date.now() - lastBroadcast) < (2 * 1000)) return this.say(con, room, "/pm " + by + ", Per evitare di essere mutata da boTTT ho annullato questo comando, riprova fra 2 secondi");
 		if (this.canUse('broadcast', room, by) || room.charAt(0) === ',') {
 			return this.say(con, room, "Guida per installare lo script -> http://goo.gl/Z6RSAl");
 		}
 	},
 	
 	guida: function(arg, by, room, con) {
-		if (this.canUse('broadcast', room, by) && (Date.now() - lastBroadcast) < (2 * 1000)) return this.say(con, room, "/pm " + by + ", Per evitare di essere mutata da boTTT ho annullato questo comando, riprova fra 2 secondi");
 		if (this.canUse('broadcast', room, by) || room.charAt(0) === ',') {
 			return this.say(con, room, "Comandi -> http://pastebin.com/Mt1bwNq4");
 		}
 	},
 	
 	duck: function(arg, by, room, con) {
-		if (this.canUse('broadcast', room, by) && (Date.now() - lastBroadcast) < (2 * 1000)) return this.say(con, room, "/pm " + by + ", Per evitare di essere mutata da boTTT ho annullato questo comando, riprova fra 2 secondi");
 		if (this.canUse('broadcast', room, by) || room.charAt(0) === ',') {
 			return this.say(con, room, "quack");
 		}
 	},
 	
 	acher: function(arg, by, room, con) {
-		if (this.canUse('broadcast', room, by) && (Date.now() - lastBroadcast) < (2 * 1000)) return this.say(con, room, "/pm " + by + ", Per evitare di essere mutata da boTTT ho annullato questo comando, riprova fra 2 secondi");
 		if (this.canUse('broadcast', room, by) || room.charAt(0) === ',') {
 			return this.say(con, room, "lo acher che bontà ♫");
 		}
