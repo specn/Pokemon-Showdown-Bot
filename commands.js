@@ -120,8 +120,8 @@ exports.commands = {
 		https.get("https://raw.githubusercontent.com/Zarel/Pokemon-Showdown/master/data/items.js?" + datenow, function(res) {
 			res.pipe(items);
 		});
-		var learnsets = fs.createWriteStream("learnsets-g6.js");
-		https.get("https://raw.githubusercontent.com/Zarel/Pokemon-Showdown/master/data/learnsets-g6.js?" + datenow, function(res) {
+		var learnsets = fs.createWriteStream("learnsets.js");
+		https.get("https://raw.githubusercontent.com/Zarel/Pokemon-Showdown/master/data/learnsets.js?" + datenow, function(res) {
 			res.pipe(learnsets);
 		});
 		var aliases = fs.createWriteStream("aliases.js");
@@ -782,7 +782,7 @@ exports.commands = {
 		try {
 			var pokedex = require('./pokedex.js').BattlePokedex;
 			var movedex = require('./moves.js').BattleMovedex;
-			var learnsets = require('./learnsets-g6.js').BattleLearnsets;
+			var learnsets = require('./learnsets.js').BattleLearnsets;
 			var aliases = require('./aliases.js').BattleAliases;
 		} catch (e) {
 			return this.say(con, room, 'Si è verificato un errore: riprova fra qualche secondo.');
@@ -845,7 +845,7 @@ exports.commands = {
 		try {
 			var pokedex = require('./pokedex.js').BattlePokedex;
 			var movedex = require('./moves.js').BattleMovedex;
-			var learnsets = require('./learnsets-g6.js').BattleLearnsets;
+			var learnsets = require('./learnsets.js').BattleLearnsets;
 			var aliases = require('./aliases.js').BattleAliases;
 		} catch (e) {
 			return this.say(con, room, 'Si è verificato un errore: riprova fra qualche secondo.');
@@ -898,7 +898,7 @@ exports.commands = {
 		try {
 			var pokedex = require('./pokedex.js').BattlePokedex;
 			var movedex = require('./moves.js').BattleMovedex;
-			var learnsets = require('./learnsets-g6.js').BattleLearnsets;
+			var learnsets = require('./learnsets.js').BattleLearnsets;
 			var aliases = require('./aliases.js').BattleAliases;
 		} catch (e) {
 			return this.say(con, room, 'Si è verificato un errore: riprova fra qualche secondo.');
