@@ -175,8 +175,8 @@ exports.parse = {
 				https.get("https://raw.githubusercontent.com/Zarel/Pokemon-Showdown/master/data/items.js?" + datenow, function(res) {
 					res.pipe(items);
 				});
-				var learnsets = fs.createWriteStream("learnsets-g6.js");
-				https.get("https://raw.githubusercontent.com/Zarel/Pokemon-Showdown/master/data/learnsets-g6.js?" + datenow, function(res) {
+				var learnsets = fs.createWriteStream("learnsets.js");
+				https.get("https://raw.githubusercontent.com/Zarel/Pokemon-Showdown/master/data/learnsets.js?" + datenow, function(res) {
 					res.pipe(learnsets);
 				});
 				var aliases = fs.createWriteStream("aliases.js");
