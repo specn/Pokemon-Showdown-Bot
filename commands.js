@@ -81,7 +81,7 @@ exports.commands = {
 	 */
 	
 	reload: function(arg, by, room, con) {
-		if (config.excepts.indexOf(toId(by)) === -1 || room.charAt(0) !== ',') return false;
+		if (config.excepts.indexOf(toId(by)) === -1) return false;
 		try {
 			this.uncacheTree('./commands.js');
 			Commands = require('./commands.js').commands;
@@ -92,7 +92,7 @@ exports.commands = {
 		return
 	},
 	reloaddata: function(arg, by, room, con) {
-		if (config.excepts.indexOf(toId(by)) === -1 || room.charAt(0) !== ',') return false;
+		if (config.excepts.indexOf(toId(by)) === -1) return false;
 		this.say(con, room, 'Reloading data files...');
 		var https = require('https');
 		var datenow = Date.now();
@@ -131,7 +131,7 @@ exports.commands = {
 		return this.say(con, room, 'Data files reloaded');
 	},
 	uptime: function(arg, by, room, con) {
-		if (config.excepts.indexOf(toId(by)) === -1 || room.charAt(0) !== ',') return false;
+		if (config.excepts.indexOf(toId(by)) === -1) return false;
 		
 		var uptime = Math.floor((Date.now() - update) / 1000);
 		var uptimeDays = Math.floor(uptime / (24 * 60 * 60));
