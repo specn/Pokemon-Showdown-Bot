@@ -427,50 +427,37 @@ exports.commands = {
 		} catch (e) {
 			return this.say(con, room, 'Si è verificato un errore: riprova fra qualche secondo.');
 		}
-		arg = arg.toLowerCase().replace(/[^a-z0-9,]/g,"").split(",");
+		arg = arg.toLowerCase().replace(/[^a-z0-9,/]/g,"").split(",");
 		var pokemon = [];
 		var extractedmon = '';
 		var tiers = ["ag", "uber", "ou", "bl", "uu", "bl2", "ru", "bl3", "nu", "pu", "nfe", "lcuber", "lc", "cap", "unreleased"];
 		var types = ["normal", "fire", "fighting", "water", "flying", "grass", "poison", "electric", "ground", "psychic", "rock", "ice", "bug", "dragon", "ghost", "dark", "steel", "fairy"];
+		var colours = ["red", "blue", "yellow", "green", "black", "brown", "purple", "gray", "white", "pink"];
 		var tiersSearch = [];
 		var typesSearch = [];
+		var doubleTypesSearch = [];
+		var coloursSearch = [];
 		for (var j in arg) {
+			if (arg[j] == "") continue;
 			if (tiers.indexOf(arg[j]) > -1 && tiersSearch.indexOf(arg[j]) == -1) tiersSearch.push(arg[j]);
 			else if (types.indexOf(arg[j]) > -1 && typesSearch.indexOf(arg[j]) == -1) typesSearch.push(arg[j]);
+			else if (colours.indexOf(arg[j]) > -1 && coloursSearch.indexOf(arg[j]) == -1) coloursSearch.push(arg[j]);
+			else return this.say(con, room, "\"" + arg[j] + "\" non corrisponde a nessuna categoria");
 		}
 		
 		for (var i in formatsdata) {
 			if (formatsdata[i].tier) {
-				if (tiersSearch.length) {
-					if (tiersSearch.indexOf(formatsdata[i].tier.toLowerCase()) > -1) {
-						if (typesSearch.length) {
-							if (typesSearch.indexOf(pokedex[i].types[0].toLowerCase()) > -1 || 
-							(pokedex[i].types[1] && typesSearch.indexOf(pokedex[i].types[1].toLowerCase()) > -1)) {
-								pokemon.push(pokedex[i].species);
-							}
-						}
-						else {
-							pokemon.push(pokedex[i].species);
-						}
-					}
-				}
-				else {
-					if (formatsdata[i].tier != 'Unreleased' && formatsdata[i].tier != '' && formatsdata[i].tier != 'CAP') {
-						if (typesSearch.length) {
-							if (typesSearch.indexOf(pokedex[i].types[0].toLowerCase()) > -1 || 
-							(pokedex[i].types[1] && typesSearch.indexOf(pokedex[i].types[1].toLowerCase()) > -1)) {
-								pokemon.push(pokedex[i].species);
-							}
-						}
-						else {
-							pokemon.push(pokedex[i].species);
-						}
-					}
-				}
+				matchTier = tiersSearch.length ? (tiersSearch.indexOf(formatsdata[i].tier.toLowerCase()) > -1) :
+							(["unreleased", "cap"].indexOf(formatsdata[i].tier.toLowerCase()) == -1);
+				matchType = typesSearch.length ? (typesSearch.indexOf(pokedex[i].types[0].toLowerCase()) > -1) ||
+							(pokedex[i].types[1] && typesSearch.indexOf(pokedex[i].types[1].toLowerCase()) > -1) : true;
+				matchColour = coloursSearch.length ? (coloursSearch.indexOf(pokedex[i].color.toLowerCase()) > -1) : true;
+				
+				if (matchTier && matchType && matchColour) pokemon.push(pokedex[i].species);
 			}
 		}
 		
-		if (pokemon.length == 0) return this.say(con, room, "errore");
+		if (pokemon.length == 0) return this.say(con, room, "Nessun Pokémon trovato nelle categorie richieste");
 		extractedmon = pokemon[Math.floor(Math.random()*pokemon.length)];
 		text += extractedmon;
 		this.say(con, room, text);
