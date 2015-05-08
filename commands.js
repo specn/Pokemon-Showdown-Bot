@@ -411,6 +411,8 @@ exports.commands = {
 		return
 	},
 	
+	mon: 'randompoke',
+	randmon: 'randompoke',
 	randompike: 'randompoke',
 	randompokemon: 'randompoke',
 	randompoke: function(arg, by, room, con) {
