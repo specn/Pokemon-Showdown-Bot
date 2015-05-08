@@ -177,8 +177,6 @@ if (config.watchconfig) {
 
 var timeout;
 
-global.lastBroadcast = 0;
-
 // And now comes the real stuff...
 info('starting server');
 

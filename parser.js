@@ -309,7 +309,6 @@ exports.parse = {
 	},
 	say: function(connection, room, text) {
 		if (room.substr(0, 1) !== ',') {
-			lastBroadcast = Date.now();
 			var str = (room !== 'lobby' ? room : '') + '|' + text;
 			send(connection, str);
 		} else {
