@@ -181,8 +181,6 @@ exports.commands = {
 	canuse: function(arg, by, room, con) {
 		if (!this.hasRank(by, '#~') || room.charAt(0) === ',') return false;
 
-		if (Date.now() - lastBroadcast < 2 * 1000) return this.say(con, room, "/pm " + by + ", Per evitare di essere mutata da boTTT ho annullato questo comando, riprova fra 2 secondi");
-
 		var settable = {
 			broadcast: 1
 		};
@@ -499,8 +497,7 @@ exports.commands = {
 	/*randomteam: function(arg, by, room, con) {
 		if (this.canUse('broadcast', room, by) && (Date.now() - lastBroadcast) < (2 * 1000)) return this.say(con, room, "/pm " + by + ", Per evitare di essere mutata da boTTT ho annullato questo comando, riprova fra 2 secondi");
 		if (this.canUse('randomteam', room, by) || room.charAt(0) === ',') {
-			if (Date.now() - lastBroadcast < 2 * 1000) return this.say(con, room, "/pm " + by + ", Per evitare di essere mutata da boTTT ho annullato questo comando, riprova fra 2 secondi");
-			var text = '';
+				var text = '';
 		} else {
 			return this.say(con, room, '/pm ' + by + ', Scrivimi il comando in PM.');
 		}
