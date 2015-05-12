@@ -182,7 +182,8 @@ exports.commands = {
 		if (!this.hasRank(by, '#~') || room.charAt(0) === ',') return false;
 
 		var settable = {
-			broadcast: 1
+			broadcast: 1,
+			spam: 1
 		};
 		var modOpts = {
 			flooding: 1,
