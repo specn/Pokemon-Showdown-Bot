@@ -410,6 +410,9 @@ exports.commands = {
 	broadcast: function(arg, by, room, con) {
 		return
 	},
+	spam: function(arg, by, room, con) {
+		return
+	},
 	
 	mon: 'randompoke',
 	randmon: 'randompoke',
