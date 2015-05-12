@@ -1506,6 +1506,12 @@ exports.commands = {
 		}
 	},
 	
+	lenny: function(arg, by, room, con) {
+		if (this.canUse('broadcast', room, by) || room.charAt(0) === ',') {
+			return this.say(con, room, "( ͡° ͜ʖ ͡°)");
+		}
+	},
+	
 	duck: function(arg, by, room, con) {
 		if (this.canUse('broadcast', room, by) || room.charAt(0) === ',') {
 			return this.say(con, room, "quack");
