@@ -1507,7 +1507,7 @@ exports.commands = {
 	},
 	
 	lenny: function(arg, by, room, con) {
-		if (this.canUse('broadcast', room, by) || room.charAt(0) === ',') {
+		if (this.canUse('spam', room, by) || room.charAt(0) === ',') {
 			return this.say(con, room, "( ͡° ͜ʖ ͡°)");
 		}
 	},
