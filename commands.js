@@ -485,7 +485,7 @@ exports.commands = {
 			}
 		}
 		else if (arg == "") {
-			tiers = ["Random Battle", "OU", "Ubers", "UU", "RU", "NU", "LC", "Anything Goes", "Random Doubles Battle", "Smogon Doubles", "Random Triples Battle", "Seasonal", "Challenge Cup", "Challenge Cup 1-vs-1", "1v1", "Monotype", "PU", "[Gen 5] OU", "[Gen 2] Random Battle", "[Gen 1] Random Battle", "[Gen 1] Challenge Cup"];
+			tiers = ["Random Battle", "OU", "Ubers", "UU", "RU", "NU", "LC", "Anything Goes", "Random Doubles Battle", "Smogon Doubles", "Random Triples Battle", "Seasonal", "Battle Factory", "Challenge Cup", "Battle Cup 1v1", "1v1", "Monotype", "PU", "[Gen 5] OU", "[Gen 2] Random Battle", "[Gen 1] Random Battle"];
 		}
 		else {
 			return this.say(con, room, "errore");
@@ -1522,12 +1522,6 @@ exports.commands = {
 		return this.say(con, room, text);
 	},
 	
-	calc: function(arg, by, room, con) {
-		if (this.canUse('broadcast', room, by) || room.charAt(0) === ',') {
-			return this.say(con, room, "https://gamut-was-taken.github.io/");
-		}
-	},
-	
 	stats: function(arg, by, room, con) {
 		if (this.canUse('broadcast', room, by) || room.charAt(0) === ',') {
 			return this.say(con, room, "http://www.smogon.com/stats/2015-04/");
@@ -1543,13 +1537,13 @@ exports.commands = {
 	renames: 'showrenames',
 	showrenames: function(arg, by, room, con) {
 		if (this.canUse('broadcast', room, by) || room.charAt(0) === ',') {
-			return this.say(con, room, "Guida per installare lo script -> http://goo.gl/Z6RSAl");
+			return this.say(con, room, "https://parnassius.makes.org/thimble/NDg3MzI2MjA4/ps-showrenames_");
 		}
 	},
 	
 	guida: function(arg, by, room, con) {
 		if (this.canUse('broadcast', room, by) || room.charAt(0) === ',') {
-			return this.say(con, room, "Comandi -> http://pastebin.com/Mt1bwNq4");
+			return this.say(con, room, "Comandi -> https://parnassius.makes.org/thimble/LTExMzE4MDE2MA==/guida-cerbottana_");
 		}
 	},
 	
