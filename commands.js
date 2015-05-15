@@ -662,8 +662,51 @@ exports.commands = {
 		else return this.say(con, room, "Pokémon non trovato");
 	},
 	
+	naturalgift: function(arg, by, room, con) {
+		if (this.canUse('broadcast', room, by) || room.charAt(0) === ',') {
+			var text = '';
+		}
+		else {
+			return this.say(con, room, '/pm ' + by + ', Scrivimi il comando in PM.');
+		}
+		try {
+			var items = require('./items.js').BattleItems;
+		} catch (e) {
+			return this.say(con, room, 'Si è verificato un errore: riprova fra qualche secondo.');
+		}
+		var types = ["normal", "fire", "fighting", "water", "flying", "grass", "poison", "electric", "ground", "psychic", "rock", "ice", "bug", "dragon", "ghost", "dark", "steel", "fairy"];
+		arg = toId(arg);
+		if (arg === "" || types.indexOf(arg) === -1) return this.say(con, room, "Inserisci un tipo");
+		
+		var results = [];
+		var count = 0;
+		var name;
+		var power;
+		
+		for (var i in items) {
+			if (items[i].naturalGift && items[i].naturalGift.type && items[i].naturalGift.type.toLowerCase() === arg) {
+				name = items[i].name || i;
+				power = items[i].naturalGift.basePower || 0;
+				results[count] = {name: name, power: power};
+				count++;
+			}
+		}
+		
+		results = results.sort(function (a, b) {
+			return b.power - a.power;
+		});
+		
+		for (var j in results) {
+			if (j > 0) text += " - ";
+			text += results[j].name + " (" + results[j].power + ")";
+		}
+		
+		return this.say(con, room, text);
+	},
+	
 	trad: function(arg, by, room, con) {
 		if (this.canUse('broadcast', room, by) || room.charAt(0) === ',') {
+			var text = '';
 		}
 		else {
 			return this.say(con, room, '/pm ' + by + ', Scrivimi il comando in PM.');
@@ -674,8 +717,8 @@ exports.commands = {
 		} catch (e) {
 			return this.say(con, room, 'Si è verificato un errore: riprova fra qualche secondo.');
 		}
-		if (parola == "") return this.say(con, room, "Cosa devo tradurre?");
 		var parola = arg.toLowerCase().replace(/[^a-z0-9àèéìòù]/g,"");
+		if (parola == "") return this.say(con, room, "Cosa devo tradurre?");
 		if (aliases[parola]) var aliasParola = aliases[parola].toLowerCase().replace(/[^a-z0-9àèéìòù]/g,"");
 		
 		var results = [];
