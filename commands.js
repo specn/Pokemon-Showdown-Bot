@@ -1559,6 +1559,16 @@ exports.commands = {
 		}
 	},
 	
+	infli: 'inflikted',
+	inflikted: function(arg, by, room, con) {
+		if (this.canUse('broadcast', room, by) || room.charAt(0) === ',') {
+			var text = "INFLIKTED".split("").sort(function(a, b) {
+				return Math.random() - 0.5;
+			}).join("");
+			return this.say(con, room, "CIAO " + text);
+		}
+	},
+	
 	duck: function(arg, by, room, con) {
 		if (this.canUse('broadcast', room, by) || room.charAt(0) === ',') {
 			return this.say(con, room, "quack");
