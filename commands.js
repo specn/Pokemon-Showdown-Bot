@@ -1566,7 +1566,7 @@ exports.commands = {
 			var text = "INFLIKTED".split("").sort(function(a, b) {
 				return Math.random() - 0.5;
 			}).join("");
-			return this.say(con, room, "CIAO " + text);
+			return this.say(con, room, "ciao " + text);
 		}
 	},
 	
