@@ -1553,6 +1553,7 @@ exports.commands = {
 		}
 	},
 	
+	quas: 'quasar',
 	quasar: function(arg, by, room, con) {
 		if (this.canUse('broadcast', room, by) || room.charAt(0) === ',') {
 			return this.say(con, room, "basta con le pupazzate");
