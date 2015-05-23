@@ -466,6 +466,79 @@ exports.commands = {
 		text += extractedmon;
 		this.say(con, room, text);
 	},
+	randomitem: function(arg, by, room, con) {
+		if (this.canUse('broadcast', room, by) || room.charAt(0) === ',') {
+			var text = '';
+		} else {
+			return this.say(con, room, '/pm ' + by + ', Scrivimi il comando in PM.');
+		}
+		try {
+			var items = require('./items.js').BattleItems;
+		} catch (e) {
+			return this.say(con, room, 'Si è verificato un errore: riprova fra qualche secondo.');
+		}
+		var keyArray = Object.keys(items);
+		text += items[keyArray[Math.floor(Math.random() * keyArray.length)]].name;
+		return this.say(con, room, text);
+	},
+	randomability: function(arg, by, room, con) {
+		if (this.canUse('broadcast', room, by) || room.charAt(0) === ',') {
+			var text = '';
+		} else {
+			return this.say(con, room, '/pm ' + by + ', Scrivimi il comando in PM.');
+		}
+		try {
+			var pokedex = require('./pokedex.js').BattlePokedex;
+			var aliases = require('./aliases.js').BattleAliases;
+		} catch (e) {
+			return this.say(con, room, 'Si è verificato un errore: riprova fra qualche secondo.');
+		}
+		var arg = toId(arg);
+		if (arg == "") return this.say(con, room, "Inserisci un Pokémon");
+		if (aliases[arg]) arg = toId(aliases[arg]);
+		
+		var abilities = pokedex[arg].abilities;
+		var keyArray = Object.keys(abilities);
+		text += abilities[keyArray[Math.floor(Math.random() * keyArray.length)]];
+		return this.say(con, room, text);
+	},
+	randomev: function(arg, by, room, con) {
+		if (this.canUse('broadcast', room, by) || room.charAt(0) === ',') {
+			var text = '';
+		} else {
+			return this.say(con, room, '/pm ' + by + ', Scrivimi il comando in PM.');
+		}
+		var evs = {hp: 0, atk: 0, def: 0, spa: 0, spd: 0, spe: 0};
+		var stats = ["hp", "atk", "def", "spa", "spd", "spe"];
+		var evpool = 127;
+		do {
+			var x = stats[Math.floor(Math.random() * stats.length)];
+			var y = Math.floor(Math.random() * Math.min(64 - evs[x], evpool + 1));
+			evs[x] += y;
+			evpool -= y;
+		} while (evpool > 0);
+		text += evs.hp * 4 + " HP / " + evs.atk * 4 + " Atk / " + evs.def * 4 + " Def / " + evs.spa * 4 + " SpA / " + evs.spd * 4 + " SpD / " + evs.spe * 4 + " Spe";
+		return this.say(con, room, text);
+	},
+	randomiv: function(arg, by, room, con) {
+		if (this.canUse('broadcast', room, by) || room.charAt(0) === ',') {
+			var text = '';
+		} else {
+			return this.say(con, room, '/pm ' + by + ', Scrivimi il comando in PM.');
+		}
+		text += Math.floor(Math.random() * 32) + " HP / " + Math.floor(Math.random() * 32) + " Atk / " + Math.floor(Math.random() * 32) + " Def / " + Math.floor(Math.random() * 32) + " SpA / " + Math.floor(Math.random() * 32) + " SpD / " + Math.floor(Math.random() * 32) + " Spe";
+		return this.say(con, room, text);
+	},
+	randomnature: function(arg, by, room, con) {
+		if (this.canUse('broadcast', room, by) || room.charAt(0) === ',') {
+			var text = '';
+		} else {
+			return this.say(con, room, '/pm ' + by + ', Scrivimi il comando in PM.');
+		}
+		var list = ["Adamant", "Bashful", "Bold", "Brave", "Calm", "Careful", "Docile", "Gentle", "Hardy", "Hasty", "Impish", "Jolly", "Lax", "Lonely", "Mild", "Modest", "Naive", "Naughty", "Quiet", "Quirky", "Rash", "Relaxed", "Sassy", "Serious", "Timid"];
+		text += list[Math.floor(Math.random() * list.length)];
+		return this.say(con, room, text);
+	},
 	randomtier: function(arg, by, room, con) {
 		if (this.canUse('broadcast', room, by) || room.charAt(0) === ',') {
 			var text = '';
