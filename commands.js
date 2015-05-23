@@ -1553,6 +1553,12 @@ exports.commands = {
 		}
 	},
 	
+	anagram: function(arg, by, room, con) {
+		if (this.canUse('spam', room, by) || room.charAt(0) === ',') {
+			return this.say(con, room, shuffle(arg.split("")).join(""));
+		}
+	},
+	
 	quas: 'quasar',
 	quasar: function(arg, by, room, con) {
 		if (this.canUse('broadcast', room, by) || room.charAt(0) === ',') {

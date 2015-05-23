@@ -106,6 +106,7 @@ if (!Object.select) {
 // First dependencies and welcome message
 var sys = require('sys');
 global.colors = require('colors');
+global.shuffle = require('knuth-shuffle').knuthShuffle;
 
 global.update = Date.now();
 
