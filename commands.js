@@ -1628,7 +1628,9 @@ exports.commands = {
 	
 	anagram: function(arg, by, room, con) {
 		if (this.canUse('spam', room, by) || room.charAt(0) === ',') {
-			return this.say(con, room, shuffle(arg.split("")).join(""));
+			arg = shuffle(arg.split("")).join("");
+			if (arg.charAt(0) === "/") arg = "/" + arg;
+			return this.say(con, room, arg);
 		}
 	},
 	
