@@ -1662,6 +1662,12 @@ exports.commands = {
 		}
 	},
 	
+	trev: 'trev',
+	trev: function(arg, by, room, con) {
+		if (this.canUse('broadcast', room, by) || room.charAt(0) === ',') {
+			return this.say(con, room, "gioco di merda");
+		}
+	},
 	spagueti: function(arg, by, room, con) {
 		if (room.charAt(0) !== ',') return false;
 		by = toId(by);
