@@ -1633,10 +1633,15 @@ exports.commands = {
 		}
 	},
 	
-	quas: 'quasar',
-	quasar: function(arg, by, room, con) {
+	acher: function(arg, by, room, con) {
 		if (this.canUse('broadcast', room, by) || room.charAt(0) === ',') {
-			return this.say(con, room, "basta con le pupazzate");
+			return this.say(con, room, "lo acher che bontà ♫");
+		}
+	},
+	
+	duck: function(arg, by, room, con) {
+		if (this.canUse('broadcast', room, by) || room.charAt(0) === ',') {
+			return this.say(con, room, "quack");
 		}
 	},
 	
@@ -1650,15 +1655,10 @@ exports.commands = {
 		}
 	},
 	
-	duck: function(arg, by, room, con) {
+	quas: 'quasar',
+	quasar: function(arg, by, room, con) {
 		if (this.canUse('broadcast', room, by) || room.charAt(0) === ',') {
-			return this.say(con, room, "quack");
-		}
-	},
-	
-	acher: function(arg, by, room, con) {
-		if (this.canUse('broadcast', room, by) || room.charAt(0) === ',') {
-			return this.say(con, room, "lo acher che bontà ♫");
+			return this.say(con, room, "basta con le pupazzate");
 		}
 	},
 	
